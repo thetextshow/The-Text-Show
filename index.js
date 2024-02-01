@@ -5,11 +5,12 @@ const express = require('express');
 const app = express();
 app.use(express.json()); 
 
-const token = process.env.VERIFY_TOKEN;
+const verify_token = process.env.VERIFY_TOKEN;
+const auth_token = process.env.AUTH_TOKEN;
 
 app.get('/', (req, res) => {
   if(req.query['hub.mode'] == 'subscribe' &&
-    req.query['hub.verify_token'] == token) {
+    req.query['hub.verify_token'] == verify_token) {
     
     res.send(req.query['hub.challenge']);
   } else {
@@ -20,10 +21,13 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   const message = getMessage(req);
   if(message && message['type'] === 'text') {
-  	console.log("MESSAGE:", message['text']['body']);
+  	sendMessage("17146060669", "Message received!");
+  	console.log("THEM:", message['text']['body']);
+  	console.log("US:", "Message received!");
+
   }
   else {
-  	console.log(req.body);
+  	//console.log(req.body);
   }
 
   res.sendStatus(200);
@@ -31,10 +35,43 @@ app.post('/', (req, res) => {
 
 const port = parseInt(process.env.PORT) || 3000;
 app.listen(port, () => {
-  console.log(`helloworld: listening on port ${port}`);
+  console.log(`verify token: ${verify_token}`);
+  console.log(`auth token: ${auth_token}`);
 });
 
 function getMessage(request) {
 	const msg = request.body['entry'][0]['changes'][0]['value']['messages']?.[0];
 	return msg;
+}
+
+const axios = require('axios');
+
+function sendMessage(to, message) {
+	const data = JSON.stringify({
+	  "messaging_product": "whatsapp",
+	  "to": to,
+  	  "type": "text",
+      "text": {
+      	"body": message
+      }
+	});
+
+	const config = {
+	  method: 'post',
+	  maxBodyLength: Infinity,
+	  url: 'https://graph.facebook.com/v18.0/207079465828031/messages',
+	  headers: { 
+	    'Content-Type': 'application/json', 
+	    'Authorization': 'Bearer ' + auth_token
+	  },
+	  data: data
+	};
+
+	axios.request(config)
+	.then((response) => {
+	  console.log(JSON.stringify(response.data));
+	})
+	.catch((error) => {
+	  console.log(error);
+	});
 }
