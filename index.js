@@ -19,8 +19,11 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   const message = getMessage(req);
-  if(message['type'] === 'text') {
+  if(message && message['type'] === 'text') {
   	console.log("MESSAGE:", message['text']['body']);
+  }
+  else {
+  	console.log(req.body);
   }
 
   res.sendStatus(200);
@@ -32,6 +35,6 @@ app.listen(port, () => {
 });
 
 function getMessage(request) {
-	const msg = request.body['entry'][0]['changes'][0]['value']['messages'][0];
+	const msg = request.body['entry'][0]['changes'][0]['value']['messages']?.[0];
 	return msg;
 }
