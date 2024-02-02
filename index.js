@@ -19,12 +19,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  const message = getMessage(req);
-  if(message && message['type'] === 'text') {
-  	sendMessage("17146060669", "Message received!");
-  	console.log("THEM:", message['text']['body']);
-  	console.log("US:", "Message received!");
-
+  message = getMessage(req); // implicitly global. not strict
+  if(message && message['type'] === 'text') { // must be a text
+  	sendMessage(message['from'], "Message received!");
+  	checkKeyword(message['text']['body']);
   }
   else {
   	//console.log(req.body);
@@ -40,8 +38,7 @@ app.listen(port, () => {
 });
 
 function getMessage(request) {
-	const msg = request.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-	return msg;
+	return request.body['entry'][0]['changes'][0]['value']['messages']?.[0];
 }
 
 const axios = require('axios');
@@ -72,7 +69,42 @@ function sendMessage(to, message) {
 	  console.log(JSON.stringify(response.data));
 	})
 	.catch((error) => {
-	  console.log(error);
+	  console.log(error.response.data);
 	});
 }
 
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+
+const serviceAccount = require('./the-text-show-firebase-adminsdk-7goi3-5b0b5878e8.json');
+initializeApp({
+  credential: cert(serviceAccount)
+})
+
+const db = getFirestore();
+
+async function checkKeyword(word) {
+	const snapshot = await db.collection('keywords').doc('GCRHh18ZgczCaEZKdKk3').get();
+	const keywords = snapshot.data()['keywords'];
+	
+	if(word in keywords) {
+		eval(keywords[word]);
+	}
+	else {
+		console.log(word, "is not a keyword...");
+	}
+
+	
+}
+
+function help() {
+	sendMessage(message['from'], "You typed HELP");
+}
+
+function play() {
+	sendMessage(message['from'], "You typed PLAY");
+}
+
+function stop() {
+	sendMessage(message['from'], "You typed STOP");
+}
