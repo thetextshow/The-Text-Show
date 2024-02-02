@@ -8,6 +8,7 @@ app.use(express.json());
 const verify_token = process.env.VERIFY_TOKEN;
 const auth_token = process.env.AUTH_TOKEN;
 
+// for webhook verification from Meta
 app.get('/', (req, res) => {
   if(req.query['hub.mode'] == 'subscribe' &&
     req.query['hub.verify_token'] == verify_token) {
@@ -18,38 +19,35 @@ app.get('/', (req, res) => {
   }
 });
 
+// if we receive something at the webhook endpoint
 app.post('/', (req, res) => {
-  message = getMessage(req); // implicitly global. not strict
-  if(message && message['type'] === 'text') { // must be a text
-  	sendMessage(message['from'], "Message received!");
+  // implicitly global. not strict
+  message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
+  
+  // must be a text
+  if(message && message['type'] === 'text') {
   	checkKeyword(message['text']['body']);
-  }
-  else {
-  	//console.log(req.body);
   }
 
   res.sendStatus(200);
 });
 
+// starting the server
 const port = parseInt(process.env.PORT) || 3000;
 app.listen(port, () => {
   console.log(`verify token: ${verify_token}`);
   console.log(`auth token: ${auth_token}`);
 });
 
-function getMessage(request) {
-	return request.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-}
-
 const axios = require('axios');
 
-function sendMessage(to, message) {
+function sendMessage(to, msg) {
 	const data = JSON.stringify({
 	  "messaging_product": "whatsapp",
 	  "to": to,
   	  "type": "text",
       "text": {
-      	"body": message
+      	"body": msg
       }
 	});
 
@@ -91,7 +89,7 @@ async function checkKeyword(word) {
 		eval(keywords[word]);
 	}
 	else {
-		console.log(word, "is not a keyword...");
+		sendMessage(message['from'], word + " is not a keyword...");
 	}
 
 	
