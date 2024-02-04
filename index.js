@@ -115,21 +115,21 @@ function stop() {
 }
 
 function freeAnswer() {
-	if(whatIsLive() === "free") {
+	if(whatIsLive() === "FREE") {
 		sendMessage(message['from'], "Correct! You get today's $1 question for free!");
 	}
 }
 
 function paidAnswer() {
-	if(whatIsLive() === "paid" && eligibleForPaid()) {
+	if(whatIsLive() === "PAID" && eligibleForPaid()) {
 		sendMessage(message['from'], "Correct! You win $10,000!");
 	}
 }
 
-// returns "free", "paid", or "none" based on which
+// returns "FREE", "PAID", or "NONE" based on which
 // competition is live
 function whatIsLive() {
-	return "none";
+	return "NONE";
 }
 
 // returns true if the player paid for the $1 competition
@@ -138,5 +138,8 @@ function eligibleForPaid() {
 }
 
 function noKeyword(word) {
-	sendMessage(message['from'], word + " is not a keyword...");
+	if(whatIsLive() === "NONE") {
+		sendMessage(message['from'], word + " is not a keyword...");
+	}
+	
 }
