@@ -121,7 +121,7 @@ function freeAnswer() {
 }
 
 function paidAnswer() {
-	if(whatIsLive() === "PAID" && eligibleForPaid()) {
+	if(whatIsLive() === "PAID" && registeredForPaid()) {
 		sendMessage(message['from'], "Correct! You win $10,000!");
 	}
 }
@@ -133,7 +133,7 @@ function whatIsLive() {
 }
 
 // returns true if the player paid for the $1 competition
-function eligibleForPaid() {
+function registeredForPaid() {
 	return false;
 }
 
