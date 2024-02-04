@@ -82,11 +82,17 @@ initializeApp({
 const db = getFirestore();
 
 async function checkKeyword(word) {
-	const snapshot = await db.collection('keywords').doc('GCRHh18ZgczCaEZKdKk3').get();
-	const keywords = snapshot.data()['keywords'];
+	const keySnapshot = await db.collection('keywords').doc('keywords').get();
+	const keywords = keySnapshot.data()['keywords'];
+
+	const ansSnapshot = await db.collection('keywords').doc('answers').get();
+	const answers = ansSnapshot.data()['answers'];
 	
 	if(word in keywords) {
 		eval(keywords[word]);
+	}
+	else if(word in answers) {
+		eval(answers[word]);
 	}
 	else {
 		noKeyword(word);
@@ -105,6 +111,14 @@ function play() {
 
 function stop() {
 	sendMessage(message['from'], "You typed STOP");
+}
+
+function freeAnswer() {
+	sendMessage(message['from'], "Correct! You get today's $1 question for free!");
+}
+
+function paidAnswer() {
+	sendMessage(message['from'], "Correct! You win $10,000!");
 }
 
 function noKeyword(word) {
