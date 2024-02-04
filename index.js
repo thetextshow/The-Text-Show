@@ -89,7 +89,7 @@ async function checkKeyword(word) {
 		eval(keywords[word]);
 	}
 	else {
-		sendMessage(message['from'], word + " is not a keyword...");
+		noKeyword(word);
 	}
 
 	
@@ -105,4 +105,8 @@ function play() {
 
 function stop() {
 	sendMessage(message['from'], "You typed STOP");
+}
+
+function noKeyword(word) {
+	sendMessage(message['from'], word + " is not a keyword...");
 }
