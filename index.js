@@ -88,6 +88,7 @@ async function checkKeyword(word) {
 	const ansSnapshot = await db.collection('keywords').doc('answers').get();
 	const answers = ansSnapshot.data()['answers'];
 	
+	// eval runs the function given in firestore
 	if(word in keywords) {
 		eval(keywords[word]);
 	}
@@ -114,11 +115,26 @@ function stop() {
 }
 
 function freeAnswer() {
-	sendMessage(message['from'], "Correct! You get today's $1 question for free!");
+	if(whatIsLive() === "free") {
+		sendMessage(message['from'], "Correct! You get today's $1 question for free!");
+	}
 }
 
 function paidAnswer() {
-	sendMessage(message['from'], "Correct! You win $10,000!");
+	if(whatIsLive() === "paid" && eligibleForPaid()) {
+		sendMessage(message['from'], "Correct! You win $10,000!");
+	}
+}
+
+// returns "free", "paid", or "none" based on which
+// competition is live
+function whatIsLive() {
+	return "none";
+}
+
+// returns true if the player paid for the $1 competition
+function eligibleForPaid() {
+	return false;
 }
 
 function noKeyword(word) {
