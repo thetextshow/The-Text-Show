@@ -133,8 +133,10 @@ function whatIsLive() {
 }
 
 // returns true if the player paid for the $1 competition
-function registeredForPaid() {
-	return false;
+async function registeredForPaid() {
+	const user = await db.collection('paid').doc(message['from']).get();
+
+	return user.exists;
 }
 
 function noKeyword(word) {
