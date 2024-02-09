@@ -88,8 +88,15 @@ async function checkKeyword(word) {
 	const ansSnapshot = await db.collection('keywords').doc('answers').get();
 	const answers = ansSnapshot.data()['answers'];
 
-	// eval runs the function given in firestore
+	/**
+	 * If the user sends a keyword, we run that command.
+	 * Otherwise, we respond based on what is live. The user
+	 * either wins the prize, hears nothing because they were
+	 * incorrect during a live competition, or receives an
+	 * informative message about the keywords and competitions.
+	 **/
 	if(word in keywords) {
+		// eval runs the function given in firestore
 		eval(keywords[word]);
 	}
 	else {
@@ -105,6 +112,7 @@ async function checkKeyword(word) {
 		}
 		else if(live === "PAID") {
 			paid = await registeredForPaid();
+
 			if(!paid) {
 				// DIFF MESSAGE
 				sendMessage(message['from'], "DIFF MESSAGE");
