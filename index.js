@@ -87,18 +87,35 @@ async function checkKeyword(word) {
 
 	const ansSnapshot = await db.collection('keywords').doc('answers').get();
 	const answers = ansSnapshot.data()['answers'];
-	
+
 	// eval runs the function given in firestore
 	if(word in keywords) {
 		eval(keywords[word]);
 	}
-	else if(word in answers) {
-		eval(answers[word]);
-	}
 	else {
-		noKeyword(word);
-	}
+		const live = whatIsLive();
 
+		if(live === "NONE") {
+			// NOT KEY
+			sendMessage(message['from'], "NOT KEY");
+		}
+		else if(live === "FREE" && answers?.[word] === "FREE") {
+			// FREE WIN
+			sendMessage(message['from'], "FREE WIN");
+		}
+		else if(live === "PAID") {
+			paid = await registeredForPaid();
+			if(!paid) {
+				// DIFF MESSAGE
+				sendMessage(message['from'], "DIFF MESSAGE");
+			}
+			else if(answers?.[word] === "PAID") {
+				// PAID WIN
+				sendMessage(message['from'], "PAID WIN");
+			}
+		}
+
+	}
 	
 }
 
@@ -114,22 +131,10 @@ function stop() {
 	sendMessage(message['from'], "You typed STOP");
 }
 
-function freeAnswer() {
-	if(whatIsLive() === "FREE") {
-		sendMessage(message['from'], "Correct! You get today's $1 question for free!");
-	}
-}
-
-function paidAnswer() {
-	if(whatIsLive() === "PAID" && registeredForPaid()) {
-		sendMessage(message['from'], "Correct! You win $10,000!");
-	}
-}
-
 // returns "FREE", "PAID", or "NONE" based on which
 // competition is live
 function whatIsLive() {
-	return "NONE";
+	return "PAID";
 }
 
 // returns true if the player paid for the $1 competition
@@ -139,9 +144,44 @@ async function registeredForPaid() {
 	return user.exists;
 }
 
+
+/*
+	// eval runs the function given in firestore
+	if(word in keywords) {
+		eval(keywords[word]);
+	}
+	else if(word in answers) {
+		eval(answers[word]);
+	}
+	else {
+		noKeyword(word);
+	}
+
+function freeAnswer() {
+	if(whatIsLive() === "FREE") {
+		sendMessage(message['from'], "Correct! You get today's $1 question for free!");
+	}
+	else if(whatIsLive() === "NONE") {
+		// NOT KEY
+	}
+}
+
+function paidAnswer() {
+	if(whatIsLive() === "PAID" && registeredForPaid()) {
+		sendMessage(message['from'], "Correct! You win $10,000!");
+	}
+	else if(whatIsLive() === "NONE") {
+		// NOT KEY
+	}
+}
+
 function noKeyword(word) {
 	if(whatIsLive() === "NONE") {
 		sendMessage(message['from'], word + " is not a keyword...");
 	}
+	else if(!registeredForPaid()) {
+		sendMessage(message['from'], word + " is not a keyword...\nPAY NOW!!!");
+	}
 	
 }
+*/
