@@ -23,10 +23,11 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   // implicitly global. not strict
   message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-  
+  phoneNumber = message?.['from'];
+
   // must be a text
   if(message && message['type'] === 'text') {
-  	checkKeyword(message['text']['body']);
+  	checkKeyword(message['text']['body'], phoneNumber);
   }
 
   res.sendStatus(200);
@@ -46,7 +47,7 @@ app.listen(port, () => {
 
 const axios = require('axios');
 
-function sendMessage(to, msg) {
+function sendMessage(msg, to=phoneNumber) {
 	const data = JSON.stringify({
 	  "messaging_product": "whatsapp",
 	  "to": to,
@@ -91,19 +92,19 @@ initializeApp({
 
 const db = getFirestore();
 
-async function checkKeyword(word) {
+async function checkKeyword(word, number=phoneNumber) {
 	const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
 	const snapshot = await db.collection('answers').doc('answers').get();
 	const answers = snapshot.data()['answers'];
 
-	const user = await db.collection('users').doc(message['from']).get();
+	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
 		if(word === "PLAY") {
 			play(false);
 		}
 		else {
-			sendMessage(message['from'], "Send PLAY to opt into The Text Show!");
+			sendMessage("Send PLAY to opt into The Text Show!");
 		}
 		return;
 	} 
@@ -131,46 +132,46 @@ async function checkKeyword(word) {
 
 		if(live === "NONE") {
 			// NOT KEY
-			sendMessage(message['from'], "NOT KEY");
+			sendMessage("NOT KEY");
 		}
 		else if(live === "FREE" && answers?.[word] === "FREE") {
 			// FREE WIN
-			sendMessage(message['from'], "FREE WIN");
+			sendMessage("FREE WIN");
 		}
 		else if(live === "PAID") {
 			paid = await registeredForPaid();
 
 			if(!paid) {
 				// DIFF MESSAGE
-				sendMessage(message['from'], "DIFF MESSAGE");
+				sendMessage("DIFF MESSAGE");
 			}
 			else if(answers?.[word] === "PAID") {
 				// PAID WIN
-				sendMessage(message['from'], "PAID WIN");
+				sendMessage("PAID WIN");
 			}
 		}
 	}
 }
 
-async function play(userExists=true) {
+async function play(userExists=true, number=phoneNumber) {
 	if(userExists) {
-		sendMessage(message['from'], "You typed PLAY");
+		sendMessage("You typed PLAY");
 	}
 	else {
-		await db.collection('users').doc(message['from']).set({
+		await db.collection('users').doc(number).set({
 			balance: 0,
-			number: message['from']
+			number: number
 		});
-		sendMessage(message['from'], "Welcome!");
+		sendMessage("Welcome!");
 	}
 }
 
 function help() {
-	sendMessage(message['from'], "You typed HELP");
+	sendMessage("You typed HELP");
 }
 
 function stop() {
-	sendMessage(message['from'], "You typed STOP");
+	sendMessage("You typed STOP");
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
@@ -180,8 +181,8 @@ async function whatIsLive() {
 }
 
 // returns true if the player paid for the $1 competition
-async function registeredForPaid() {
-	const user = await db.collection('paid').doc(message['from']).get();
+async function registeredForPaid(number=phoneNumber) {
+	const user = await db.collection('paid').doc(number).get();
 
 	return user.exists;
 }
