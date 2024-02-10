@@ -39,6 +39,11 @@ app.listen(port, () => {
   console.log(`auth token: ${auth_token}`);
 });
 
+
+/**
+ * MESSAGES
+ **/
+
 const axios = require('axios');
 
 function sendMessage(to, msg) {
@@ -71,6 +76,11 @@ function sendMessage(to, msg) {
 	});
 }
 
+
+/**
+ * KEYWORDS
+ **/
+
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
@@ -88,10 +98,21 @@ async function checkKeyword(word) {
 	const ansSnapshot = await db.collection('keywords').doc('answers').get();
 	const answers = ansSnapshot.data()['answers'];
 
+	const user = await db.collection('users').doc(message['from']).get();
+	if(!user.exists) {
+		if(word === "PLAY") {
+			play(false);
+		}
+		else {
+			sendMessage(message['from'], "Send PLAY to opt into The Text Show!");
+		}
+		return;
+	} 
+
 	/**
 	 * If the user sends a keyword, we run that command.
 	 * Otherwise, we respond based on what is live. The user
-	 * either wins the prize, hears nothing because they were
+	 * either is correct, hears nothing because they were
 	 * incorrect during a live competition, or receives an
 	 * informative message about the keywords and competitions.
 	 **/
@@ -127,21 +148,30 @@ async function checkKeyword(word) {
 	
 }
 
-function help() {
+async function help() {
 	sendMessage(message['from'], "You typed HELP");
 }
 
-function play() {
-	sendMessage(message['from'], "You typed PLAY");
+async function play(userExists=true) {
+	if(userExists) {
+		sendMessage(message['from'], "You typed PLAY");
+	}
+	else {
+		await db.collection('users').doc(message['from']).set({
+			balance: 0,
+			number: message['from']
+		});
+		sendMessage(message['from'], "Welcome!");
+	}
 }
 
-function stop() {
+async function stop() {
 	sendMessage(message['from'], "You typed STOP");
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
 // competition is live
-function whatIsLive() {
+async function whatIsLive() {
 	return "PAID";
 }
 
