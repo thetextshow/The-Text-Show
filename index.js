@@ -92,11 +92,10 @@ initializeApp({
 const db = getFirestore();
 
 async function checkKeyword(word) {
-	const keySnapshot = await db.collection('keywords').doc('keywords').get();
-	const keywords = keySnapshot.data()['keywords'];
+	const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
-	const ansSnapshot = await db.collection('keywords').doc('answers').get();
-	const answers = ansSnapshot.data()['answers'];
+	const snapshot = await db.collection('answers').doc('answers').get();
+	const answers = snapshot.data()['answers'];
 
 	const user = await db.collection('users').doc(message['from']).get();
 	if(!user.exists) {
@@ -117,11 +116,18 @@ async function checkKeyword(word) {
 	 * informative message about the keywords and competitions.
 	 **/
 	if(word in keywords) {
-		// eval runs the function given in firestore
-		eval(keywords[word]);
+		if(word === "PLAY") {
+			await play();
+		}
+		else if(word === "HELP") {
+			help();
+		}
+		else if(word === "STOP") {
+			stop();
+		}
 	}
 	else {
-		const live = whatIsLive();
+		const live = await whatIsLive();
 
 		if(live === "NONE") {
 			// NOT KEY
@@ -143,13 +149,7 @@ async function checkKeyword(word) {
 				sendMessage(message['from'], "PAID WIN");
 			}
 		}
-
 	}
-	
-}
-
-async function help() {
-	sendMessage(message['from'], "You typed HELP");
 }
 
 async function play(userExists=true) {
@@ -165,7 +165,11 @@ async function play(userExists=true) {
 	}
 }
 
-async function stop() {
+function help() {
+	sendMessage(message['from'], "You typed HELP");
+}
+
+function stop() {
 	sendMessage(message['from'], "You typed STOP");
 }
 
@@ -181,45 +185,3 @@ async function registeredForPaid() {
 
 	return user.exists;
 }
-
-
-/*
-	// eval runs the function given in firestore
-	if(word in keywords) {
-		eval(keywords[word]);
-	}
-	else if(word in answers) {
-		eval(answers[word]);
-	}
-	else {
-		noKeyword(word);
-	}
-
-function freeAnswer() {
-	if(whatIsLive() === "FREE") {
-		sendMessage(message['from'], "Correct! You get today's $1 question for free!");
-	}
-	else if(whatIsLive() === "NONE") {
-		// NOT KEY
-	}
-}
-
-function paidAnswer() {
-	if(whatIsLive() === "PAID" && registeredForPaid()) {
-		sendMessage(message['from'], "Correct! You win $10,000!");
-	}
-	else if(whatIsLive() === "NONE") {
-		// NOT KEY
-	}
-}
-
-function noKeyword(word) {
-	if(whatIsLive() === "NONE") {
-		sendMessage(message['from'], word + " is not a keyword...");
-	}
-	else if(!registeredForPaid()) {
-		sendMessage(message['from'], word + " is not a keyword...\nPAY NOW!!!");
-	}
-	
-}
-*/
