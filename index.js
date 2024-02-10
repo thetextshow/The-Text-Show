@@ -98,6 +98,7 @@ async function checkKeyword(word, number=phoneNumber) {
 	const snapshot = await db.collection('answers').doc('answers').get();
 	const answers = snapshot.data()['answers'];
 
+	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
 		if(word === "PLAY") {
@@ -124,7 +125,7 @@ async function checkKeyword(word, number=phoneNumber) {
 			help();
 		}
 		else if(word === "STOP") {
-			stop();
+			await stop();
 		}
 	}
 	else {
@@ -170,8 +171,9 @@ function help() {
 	sendMessage("You typed HELP");
 }
 
-function stop() {
-	sendMessage("You typed STOP");
+async function stop(number=phoneNumber) {
+	await db.collection('users').doc(number).delete();
+	sendMessage("You have been unsubscribed from The Text Show. Send PLAY to resubscribe.");
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
