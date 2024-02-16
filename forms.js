@@ -45,7 +45,7 @@ app.post('/', (req, res) => {
   console.log("\n\n--- Paid Keys ---");
   console.log(paidInputs);
 
-  buildText();
+  buildText(freeInputs, 'Free');
 
   res.sendStatus(200);
 });
@@ -56,28 +56,33 @@ app.listen(port, () => {
   console.log('Forms Server Started!\n');
 });
 
-function buildText() {
-  if(freeInputs['numWinners'] === 1) {
-    const freeMessage = freeInputs['question'].concat('\n\n', "Fastest person wins $", 
-      freeInputs['prize'], ".");
-    console.log(freeMessage);
-  }
-  else {
-    const freeMessage = freeInputs['question'].concat('\n\n', "Fastest ", 
-      freeInputs['numWinners'], " people win $", freeInputs['prize'], " each.");
-    console.log(freeMessage);
-  }
-  
-  if(paidInputs['numWinners'] === 1) {
-    const paidMessage = paidInputs['question'].concat('\n\n', "Fastest person wins $", 
-      paidInputs['prize'], ".");
-    console.log(paidMessage);
-  }
-  else {
-    const paidMessage = paidInputs['question'].concat('\n\n', "Fastest ", 
-      paidInputs['numWinners'], " people win $", paidInputs['prize'], " each.");
-    console.log(paidMessage);
-  }
+function buildText(input, type) {
+  // different message if it's 1 winner vs multiple winners
+  const message = input['numWinners'] === 1 ?
+    input['question'].concat('\n\n', "Fastest person wins $", input['prize'], ".")
+    : input['question'].concat('\n\n', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
+  console.log(message);
+
+  const end = input['date'].substr(0, 12)
+    + (parseInt(input['date'][12]) + 1).toString()
+    + input['date'].substr(13);
+
+  const event = {
+    'summary': type + ' Question ' + input['date'].substr(0, 10),
+    'description': message,
+    'start': {
+      'dateTime': input['date']
+    },
+    'end': {
+      'dateTime': end
+    }
+  };
+
+  console.log(event);
+
+  authorize().then((auth) => {
+    createEvent(auth, event);
+  }).catch(console.error);
 }
 
 
@@ -168,7 +173,7 @@ const event = {
   }
 };
 
-async function createEvent(auth) {
+async function createEvent(auth, event) {
   const calendar = google.calendar({version: 'v3', auth});
   calendar.events.insert({
     auth: auth,
@@ -183,5 +188,5 @@ async function createEvent(auth) {
   });
 }
 
-authorize().then(createEvent).catch(console.error);
+//authorize().then(createEvent).catch(console.error);
 
