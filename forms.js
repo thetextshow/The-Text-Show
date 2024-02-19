@@ -31,23 +31,19 @@ app.post('/', (req, res) => {
   req.body.fields.forEach((input) => {
     inputs[input.id] = input.value ? input.value : "";
   });
-
   
   Object.keys(freeKeys).forEach((key) => {
     freeInputs[key] = inputs[freeKeys[key]];
   });
-  console.log("--- Free Keys ---");
-  console.log(freeInputs);
-
-  
   Object.keys(paidKeys).forEach((key) => {
     paidInputs[key] = inputs[paidKeys[key]];
   });
-  console.log("\n\n--- Paid Keys ---");
-  console.log(paidInputs);
 
   const freeEvent = buildText(freeInputs, 'Free');
   addToCalendar(freeEvent);
+
+  // const paidEvent = buildText(paidInputs, 'Paid');
+  // addToCalendar(paidEvent);
 
   res.sendStatus(200);
 });
