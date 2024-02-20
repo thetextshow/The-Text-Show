@@ -4,15 +4,12 @@ const {CloudTasksClient} = require('@google-cloud/tasks');
 // Instantiates a client.
 const client = new CloudTasksClient();
 
-async function createHttpTask(dateTime) {
+async function createHttpTask(event, seconds) {
   const project = 'the-text-show';
   const queue = 'tts-send-trigger';
   const location = 'us-central1';
   const url = 'https://2bbd-2600-1700-cbd0-10a0-91b9-b5e9-f1e8-8b0b.ngrok-free.app';
-  const payload = 'Hello, World!';
-  const date = new Date(dateTime);
-  const seconds = date.getTime() / 1000;
-  console.log(seconds);
+  const payload = event;
 
   // Construct the fully qualified queue name.
   const parent = client.queuePath(project, location, queue);
@@ -20,7 +17,7 @@ async function createHttpTask(dateTime) {
   const task = {
     httpRequest: {
       headers: {
-        'Content-Type': 'text/plain',
+        'Content-Type': 'application/json',
       },
       httpMethod: 'POST',
       url,
@@ -28,10 +25,10 @@ async function createHttpTask(dateTime) {
   };
 
   if (payload) {
-    task.httpRequest.body = Buffer.from(payload).toString('base64');
+    task.httpRequest.body = Buffer.from(JSON.stringify(payload)).toString('base64');
   }
 
-  if (date) {
+  if (seconds) {
     // The time when the task is scheduled to be attempted.
     task.scheduleTime = {
       seconds: parseInt(seconds),

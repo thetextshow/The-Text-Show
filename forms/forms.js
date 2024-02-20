@@ -40,12 +40,8 @@ app.post('/', (req, res) => {
     paidInputs[key] = inputs[paidKeys[key]];
   });
 
-  const freeEvent = buildText(freeInputs, 'Free');
-  addToCalendar(freeEvent);
-  createHttpTask(freeInputs['date']);
-
-  // const paidEvent = buildText(paidInputs, 'Paid');
-  // addToCalendar(paidEvent);
+  scheduleEvent(freeInputs, 'Free');
+  //scheduleEvent(paidInputs, 'Paid');
 
   res.sendStatus(200);
 });
@@ -77,6 +73,17 @@ function buildText(input, type) {
       'dateTime': end
     }
   };
+}
+
+function scheduleEvent(input, type) {
+  const event = buildText(input, type);
+  addToCalendar(event);
+
+  // start the task 2 minutes before the message goes out
+  const seconds = (new Date(input['date']).getTime() / 1000) - 120;
+  // add the original form input
+  event['input'] = input;
+  createHttpTask(event, seconds);
 }
 
 
