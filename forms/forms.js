@@ -1,5 +1,6 @@
 const express = require('express');
 const addToCalendar = require('./calendar.js');
+const createHttpTask = require('./tasks.js');
 
 const app = express();
 app.use(express.json()); 
@@ -41,6 +42,7 @@ app.post('/', (req, res) => {
 
   const freeEvent = buildText(freeInputs, 'Free');
   addToCalendar(freeEvent);
+  createHttpTask(freeInputs['date']);
 
   // const paidEvent = buildText(paidInputs, 'Paid');
   // addToCalendar(paidEvent);
