@@ -39,7 +39,7 @@ app.post('/', (req, res) => {
       return;
     }
   }
-  catch {
+  catch (e) {
     console.log("Unathenticated Request Attempted!");
     res.sendStatus(200);
     return;
@@ -52,8 +52,8 @@ app.post('/', (req, res) => {
     paidInputs[key] = inputs[paidKeys[key]];
   });
 
-  scheduleEvent(freeInputs, 'Free');
-  //scheduleEvent(paidInputs, 'Paid');
+  scheduleEvent(freeInputs, 'FREE');
+  //scheduleEvent(paidInputs, 'PAID');
 
   res.sendStatus(200);
 });
@@ -97,6 +97,7 @@ function scheduleEvent(input, type) {
   const seconds = (new Date(input['date']).getTime() / 1000) - 120;
   // add the original form input
   event['input'] = input;
+  event['type'] = type;
   createHttpTask(event, seconds);
 }
 

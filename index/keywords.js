@@ -55,7 +55,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 			// NOT KEY
 			sendMessage("NOT KEY");
 		}
-		else if(live === "FREE" && answers?.[word] === "FREE") {
+		else if(live === "FREE" && answers["FREE"] === word) {
 			// FREE WIN
 			sendMessage("FREE WIN");
 		}
@@ -66,7 +66,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 				// DIFF MESSAGE
 				sendMessage("DIFF MESSAGE");
 			}
-			else if(answers?.[word] === "PAID") {
+			else if(answers["PAID"] === word) {
 				// PAID WIN
 				sendMessage("PAID WIN");
 			}
