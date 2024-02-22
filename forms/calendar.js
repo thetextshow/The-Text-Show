@@ -20,6 +20,10 @@ async function addToCalendar(event) {
     resource: event
   });
   console.log(res.data);
+
+  // Do the magic
+  const res2 = await calendar.calendarList.list();
+  console.log(res2.data);
 }
 
 module.exports = addToCalendar;

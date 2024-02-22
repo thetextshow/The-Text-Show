@@ -1,4 +1,4 @@
-require('dotenv').config(); // not sure if needed
+require('dotenv').config();
 
 const express = require('express');
 const checkKeyword = require('./keywords.js');

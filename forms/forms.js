@@ -1,3 +1,4 @@
+require('dotenv').config({path: './forms/.env.forms'});
 const express = require('express');
 const addToCalendar = require('./calendar.js');
 const createHttpTask = require('./tasks.js');
@@ -21,17 +22,28 @@ const paidKeys = { // TODO
   numWinners: 'whTVu1SexJaMWAF3bqYo8T'
 };
 
-// for generic GET requests
-app.get('/', (req, res) => {
-  console.log("GET\n" + req);
-  res.sendStatus(200);
-});
-
 // if a form is submitted with the correct endpoint
 app.post('/', (req, res) => {
-  req.body.fields.forEach((input) => {
-    inputs[input.id] = input.value ? input.value : "";
-  });
+  try {
+    let password = false;
+    req.body.fields.forEach((input) => {
+      if(input.label === "Password" && input.value === process.env.FORM_PASS) {
+        password = true;
+      }
+
+      inputs[input.id] = input.value ? input.value : "";
+    });
+    if(!password) {
+      console.log("Unathenticated Request Attempted!");
+      res.sendStatus(200);
+      return;
+    }
+  }
+  catch {
+    console.log("Unathenticated Request Attempted!");
+    res.sendStatus(200);
+    return;
+  }
   
   Object.keys(freeKeys).forEach((key) => {
     freeInputs[key] = inputs[freeKeys[key]];
@@ -79,6 +91,7 @@ function scheduleEvent(input, type) {
   if(input['date'] === "") return;
 
   const event = buildText(input, type);
+  console.log(event);
   addToCalendar(event);
 
   // start the task 2 minutes before the message goes out
