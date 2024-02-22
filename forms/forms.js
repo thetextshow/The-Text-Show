@@ -91,7 +91,6 @@ function scheduleEvent(input, type) {
   if(input['date'] === "") return;
 
   const event = buildText(input, type);
-  console.log(event);
   addToCalendar(event);
 
   // start the task 2 minutes before the message goes out
