@@ -16,14 +16,10 @@ async function addToCalendar(event) {
 
   // Do the magic
   const res = await calendar.events.insert({
-    calendarId: 'primary',
+    calendarId: 'admin@thetext.show',
     resource: event
   });
   console.log(res.data);
-
-  // Do the magic
-  const res2 = await calendar.calendarList.list();
-  console.log(res2.data);
 }
 
 module.exports = addToCalendar;
