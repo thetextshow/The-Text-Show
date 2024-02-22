@@ -2,14 +2,12 @@
  * KEYWORDS
  **/
 
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const sendMessage = require('./messaging.js');
 
-const serviceAccount = require('./the-text-show-firebase-adminsdk-7goi3-5b0b5878e8.json');
-initializeApp({
-  credential: cert(serviceAccount)
-})
+//const serviceAccount = require('./the-text-show-firebase-adminsdk-7goi3-5b0b5878e8.json');
+initializeApp();
 
 const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
@@ -81,7 +79,8 @@ async function play(userExists=true, number=phoneNumber) {
 	else {
 		await db.collection('users').doc(number).set({
 			balance: 0,
-			number: number
+			number: number,
+			createdAt: FieldValue.serverTimestamp()
 		});
 		sendMessage("Welcome!");
 	}
