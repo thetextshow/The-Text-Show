@@ -47,7 +47,7 @@ app.post('/', (req, res) => {
 });
 
 // starting the server
-const port = parseInt(process.env.PORT) || 3000;
+const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
   console.log('Forms Server Started!\n');
 });
@@ -76,6 +76,8 @@ function buildText(input, type) {
 }
 
 function scheduleEvent(input, type) {
+  if(input['date'] === "") return;
+
   const event = buildText(input, type);
   addToCalendar(event);
 
