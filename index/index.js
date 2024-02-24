@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const checkKeyword = require('./keywords.js');
+const { checkKeyword, addTimestamp } = require('./keywords.js');
 
 const app = express();
 app.use(express.json()); 
@@ -27,13 +27,22 @@ app.post('/', (req, res) => {
   // must be a text
   if(message && message['type'] === 'text') {
   	checkKeyword(message['text']['body']);
+    res.sendStatus(200);
+    return;
+  }
+
+  const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
+  global.phoneNumber = status?.['recipient_id'];
+  // must be a "sent" status
+  if(status && status['status'] === 'sent') {
+    addTimestamp(status['id'], status['timestamp']);
   }
 
   res.sendStatus(200);
 });
 
 // starting the server
-const port = parseInt(process.env.PORT) || 3000;
+const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
   console.log(`verify token: ${verify_token}`);
 });

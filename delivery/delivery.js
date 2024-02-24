@@ -11,9 +11,10 @@ app.get('/', (req, res) => {
 
 // if we receive something at the webhook endpoint
 app.post('/', (req, res) => {
-	event = req.body;
+	const event = req.body;
   console.log(event);
-  postAnswer(event['type'], event['input']['answers']);
+  global.type = event['type'] // accessible everywhere
+  postAnswer(event['input']['answers']);
 
   const delay = new Date(event['input']['date']) - new Date();
   setTimeout(() => {
@@ -36,7 +37,7 @@ const sendMessage = require('../index/messaging.js');
 initializeApp();
 const db = getFirestore();
 
-async function postAnswer(type, answer) {
+async function postAnswer(answer) {
   await db.collection('answers').doc('answers').update({
 		[`answers.${type}`]: answer
 	});
@@ -60,9 +61,14 @@ async function fetchUsersInBatches(message, batchSize=100) {
     query = query.limit(batchSize);
     const snapshot = await query.get();
 
-    snapshot.forEach(doc => {
-      const user = doc.data();
-      sendMessage("question", message, doc.id);
+    snapshot.forEach(async doc => {
+
+      const wamid = sendMessage("question", message, doc.id);
+      await doc.update({
+      	['live.type']: type,
+      	['live.wamid']: wamid,
+      	['live.sentTime']: Date().now()
+      });
       totalUsersProcessed++;
     });
 

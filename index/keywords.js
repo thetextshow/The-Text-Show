@@ -97,15 +97,25 @@ async function stop(number=phoneNumber) {
 
 // returns "FREE", "PAID", or "NONE" based on which
 // competition is live
-async function whatIsLive() {
-	return "PAID";
+async function whatIsLive(number=phoneNumber) {
+	const user = await db.collection('users').doc(number).get();
+	return user.data()['live'] ? user.data()['live.type'] : "NONE";
 }
 
 // returns true if the player paid for the $1 competition
 async function registeredForPaid(number=phoneNumber) {
 	const user = await db.collection('paid').doc(number).get();
-
 	return user.exists;
 }
 
-module.exports = checkKeyword;
+// records the actual time the player received the question
+async function addTimestamp(wamid, timestamp, number=phoneNumber) {
+	const user = await db.collection('users').doc(number).get();
+	if(user.data()['live']?.['wamid'] === wamid) {
+		await db.collection('users').doc(number).update({
+			['live.sentTime']: timestamp
+		});
+	}
+}
+
+module.exports = { checkKeyword, addTimestamp };
