@@ -62,7 +62,7 @@ async function fetchUsersInBatches(message, batchSize=100) {
 
     snapshot.forEach(doc => {
       const user = doc.data();
-      sendMessage("free_question", message, doc.id);
+      sendMessage("question", message, doc.id);
       totalUsersProcessed++;
     });
 
@@ -71,7 +71,5 @@ async function fetchUsersInBatches(message, batchSize=100) {
       lastUser = snapshot.docs[snapshot.size - 1];
     } else break;
   }
-
-  console.log(`Total users processed: ${totalUsersProcessed}`);
 }
 

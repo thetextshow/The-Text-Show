@@ -14,7 +14,7 @@ function sendMessage(template, msg, to=phoneNumber) { // phoneNumber is a global
     "template": {
     	"name": template,
     	"language": {
-    		"code": "en"
+    		"code": "en_us"
     	},
     	"components": [{
     			"type": "body",
