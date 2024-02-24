@@ -6,14 +6,24 @@ const axios = require('axios');
 require('dotenv').config();
 const auth_token = process.env.AUTH_TOKEN;
 
-function sendMessage(msg, to=phoneNumber) { // phoneNumber is a global var
+function sendMessage(template, msg, to=phoneNumber) { // phoneNumber is a global var
 	const data = JSON.stringify({
 	  "messaging_product": "whatsapp",
 	  "to": to,
-  	  "type": "text",
-      "text": {
-      	"body": msg
-      }
+	  "type": "template",
+    "template": {
+    	"name": template,
+    	"language": {
+    		"code": "en"
+    	},
+    	"components": [{
+    			"type": "body",
+    			"parameters": [{
+    					"type": "text",
+    					"text": msg
+    			}]
+    	}] 
+    }
 	});
 
 	const config = {

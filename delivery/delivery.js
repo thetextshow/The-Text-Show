@@ -62,7 +62,7 @@ async function fetchUsersInBatches(message, batchSize=100) {
 
     snapshot.forEach(doc => {
       const user = doc.data();
-      sendMessage(message, doc.id);
+      sendMessage("free_question", message, doc.id);
       totalUsersProcessed++;
     });
 

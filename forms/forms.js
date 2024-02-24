@@ -67,8 +67,8 @@ app.listen(port, () => {
 function buildText(input, type) {
   // different message if it's 1 winner vs multiple winners
   const message = input['numWinners'] === 1 ?
-    input['question'].concat('\n\n', "Fastest person wins $", input['prize'], ".")
-    : input['question'].concat('\n\n', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
+    input['question'].concat('\r\r', "Fastest person wins $", input['prize'], ".")
+    : input['question'].concat('\r\r', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
 
   // end time is one hour after start time
   const end = input['date'].substr(0, 12)
