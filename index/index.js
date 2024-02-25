@@ -32,7 +32,7 @@ app.post('/', (req, res) => {
   }
 
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
-  global.phoneNumber = status?.['recipient_id'];
+  global.phoneNumber = status?.['recipient_id']; // accessible in all files
   // must be a "sent" status
   if(status && status['status'] === 'sent') {
     addTimestamp(status['id'], status['timestamp']);
