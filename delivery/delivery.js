@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
   console.log(req);
   res.sendStatus(200);
 });
-//fart
+
 // if we receive something at the webhook endpoint
 app.post('/', (req, res) => {
 	const event = req.body;
