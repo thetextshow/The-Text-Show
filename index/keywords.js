@@ -99,7 +99,7 @@ async function stop(number=phoneNumber) {
 // competition is live
 async function whatIsLive(number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
-	return user.data()['live'] ? user.data()['live.type'] : "NONE";
+	return user.data()['live'] ? user.data()['live']['type'] : "NONE";
 }
 
 // returns true if the player paid for the $1 competition

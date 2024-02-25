@@ -63,7 +63,7 @@ async function fetchUsersInBatches(message, batchSize=100) {
 
     snapshot.forEach(async doc => {
 
-      const wamid = sendMessage("question", message, doc.id);
+      const wamid = sendMessage(message, 'question', doc.id);
       await doc.update({
       	['live.type']: type,
       	['live.wamid']: wamid,
