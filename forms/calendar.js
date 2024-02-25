@@ -9,7 +9,7 @@ async function addToCalendar(event) {
       'https://www.googleapis.com/auth/calendar.readonly',
     ],
   });
-//fart
+
   // Acquire an auth client, and bind it to all future calls
   const authClient = await auth.getClient();
   google.options({auth: authClient});
