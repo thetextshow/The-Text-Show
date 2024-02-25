@@ -101,7 +101,7 @@ async function whatIsLive(number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	return user.data()['live'] ? user.data()['live.type'] : "NONE";
 }
-
+//fart
 // returns true if the player paid for the $1 competition
 async function registeredForPaid(number=phoneNumber) {
 	const user = await db.collection('paid').doc(number).get();
