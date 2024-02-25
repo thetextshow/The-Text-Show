@@ -10,8 +10,6 @@ const verify_token = process.env.VERIFY_TOKEN;
 
 // for webhook verification from Meta
 app.get('/', (req, res) => {
-  console.log(req.query['hub.verify_token']);
-  console.log(verify_token);
   if(req.query['hub.mode'] === 'subscribe' &&
     req.query['hub.verify_token'] === verify_token) {
     
