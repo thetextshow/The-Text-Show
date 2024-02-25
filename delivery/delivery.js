@@ -37,17 +37,15 @@ const sendMessage = require('../messaging/messaging.js');
 initializeApp();
 const db = getFirestore();
 
-async function postAnswer(answer) {
+async function postAnswer(answer, type=type) {
   await db.collection('answers').doc('answers').update({
 		[`answers.${type}`]: answer
 	});
 }
 
-
 // Function to fetch users in batches
-async function fetchUsersInBatches(message, batchSize=100) {
+async function fetchUsersInBatches(message, type=type, batchSize=100) {
   let lastUser = null;
-  let totalUsersProcessed = 0;
 
   // Loop until all users are fetched
   while (true) {
@@ -61,15 +59,20 @@ async function fetchUsersInBatches(message, batchSize=100) {
     query = query.limit(batchSize);
     const snapshot = await query.get();
 
-    snapshot.forEach(async doc => {
-
-      const wamid = sendMessage(message, 'question', doc.id);
-      await doc.update({
-      	['live.type']: type,
-      	['live.wamid']: wamid,
-      	['live.sentTime']: Date().now()
-      });
-      totalUsersProcessed++;
+    snapshot.forEach(doc => {
+    	sendMessage(message, 'question', doc.id)
+      	.then(async (wamid) => {
+		      await db.collection('users').doc(doc.id).update({
+		      	live: {
+		      		type: type,
+		      		wamid: wamid,
+		      		sentTime: parseInt(Date.now() / 1000)
+		      	}
+		      });
+      	})
+      	.catch((error) => {
+      		console.log(error);
+      	});
     });
 
     // Update lastUser for the next iteration

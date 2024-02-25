@@ -3,7 +3,7 @@
  **/
 
 const axios = require('axios');
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 const auth_token = process.env.AUTH_TOKEN;
 
 function sendMessage(msg, template='question', to=phoneNumber) { // phoneNumber is a global var
@@ -37,14 +37,14 @@ function sendMessage(msg, template='question', to=phoneNumber) { // phoneNumber 
 	  data: data
 	};
 
-	axios.request(config)
-	.then((response) => {
-	  console.log(response.data);
-	  return response.data['messages'][0]['id'];
-	})
-	.catch((error) => {
-	  console.log(error.response.data);
-	});
+	return axios.request(config)
+		.then((response) => {
+		  console.log(response.data);
+		  return response.data['messages'][0]['id'];
+		})
+		.catch((error) => {
+		  console.log(error.response.data);
+		});
 }
 
 module.exports = sendMessage;
