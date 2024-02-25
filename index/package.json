@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "It's The Text Show!",
-  "main": "index.js",
+  "main": "index/index.js",
   "scripts": {
     "start": "node index/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
