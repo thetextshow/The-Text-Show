@@ -4,9 +4,8 @@
 
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const sendMessage = require('./messaging.js');
+const sendMessage = require('../messaging/messaging.js');
 
-//const serviceAccount = require('./the-text-show-firebase-adminsdk-7goi3-5b0b5878e8.json');
 initializeApp();
 
 const db = getFirestore();

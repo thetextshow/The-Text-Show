@@ -32,7 +32,7 @@ app.listen(port, () => {
 
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const sendMessage = require('../index/messaging.js');
+const sendMessage = require('../messaging/messaging.js');
 
 initializeApp();
 const db = getFirestore();

@@ -44,5 +44,5 @@ app.post('/', (req, res) => {
 // starting the server
 const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
-  console.log(`verify token: ${verify_token}`);
+  console.log('Whatsapp Webhook Server Started!');
 });
