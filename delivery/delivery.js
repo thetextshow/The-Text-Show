@@ -11,7 +11,9 @@ app.post('/', (req, res) => {
   global.questionType = event['type'] // accessible everywhere
   postAnswer(event['input']['answers']);
 
-  const delay = new Date(event['input']['date']) - new Date();
+  // send the message out 1 minute early bc of Whatsapp delay
+  const delay = new Date(event['input']['date']) - new Date() - 60000;
+  console.log(delay);
   setTimeout(() => {
   	sendToUsers(event['description']);
   }, delay);
