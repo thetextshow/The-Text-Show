@@ -1,3 +1,4 @@
+require('dotenv').config({path: './forms/.env.forms'});
 // Imports the Google Cloud Tasks library.
 const {CloudTasksClient} = require('@google-cloud/tasks');
 
@@ -8,7 +9,7 @@ async function createHttpTask(event, seconds) {
   const project = 'the-text-show';
   const queue = 'tts-send-trigger';
   const location = 'us-central1';
-  const url = 'https://29e2-76-217-28-246.ngrok-free.app';
+  const url = process.env.URL;
   const payload = event;
 
   // Construct the fully qualified queue name.
