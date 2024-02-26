@@ -8,7 +8,7 @@ async function createHttpTask(event, seconds) {
   const project = 'the-text-show';
   const queue = 'tts-send-trigger';
   const location = 'us-central1';
-  const url = 'https://2bbd-2600-1700-cbd0-10a0-91b9-b5e9-f1e8-8b0b.ngrok-free.app';
+  const url = 'https://29e2-76-217-28-246.ngrok-free.app';
   const payload = event;
 
   // Construct the fully qualified queue name.
