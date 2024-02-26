@@ -3,7 +3,7 @@
  **/
 
 const axios = require('axios');
-require('dotenv').config({path: '../.env'});
+require('dotenv').config();
 const auth_token = process.env.AUTH_TOKEN;
 
 function sendMessage(msg, template='none', to=phoneNumber) { // phoneNumber is a global var
