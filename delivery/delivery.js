@@ -7,8 +7,9 @@ app.use(express.json());
 // if we receive something at the webhook endpoint
 app.post('/', (req, res) => {
 	const event = req.body;
-  console.log(event);
   global.questionType = event['type'] // accessible everywhere
+  console.log(event);
+  
   postAnswer(event['input']['answers']);
 
   // send the message out 1 minute early bc of Whatsapp delay
