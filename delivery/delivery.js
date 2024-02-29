@@ -1,5 +1,5 @@
 const express = require('express');
-const { postAnswer, sendToUsers } = require('./updates.js');
+const { postQnA, sendToUsers } = require('./updates.js');
 
 const app = express();
 app.use(express.json()); 
@@ -10,7 +10,7 @@ app.post('/', (req, res) => {
   global.questionType = event['type'] // accessible everywhere
   console.log(event);
   
-  postAnswer(event['input']['answers']);
+  postQnA(event['input']['question'], event['input']['answers']);
 
   // send the message out 1 minute early bc of Whatsapp delay
   const delay = new Date(event['input']['date']) - new Date() - 60000;

@@ -5,11 +5,15 @@ const sendMessage = require('../messaging/messaging.js');
 initializeApp();
 const db = getFirestore();
 
-async function postAnswer(answer, type=questionType) {
-  await db.collection('answers').doc('answers').update({
-		answers: {
-			[`${type}`]: answer
-		}
+async function postQnA(question, answer, type=questionType) {
+  const questionsArray = question.split('\n');
+  await db.collection('QnA').doc('questions').update({
+    [`${type}`]: questionsArray
+  });
+
+  const answersArray = answer.split('\n');
+  await db.collection('QnA').doc('answers').update({
+		[`${type}`]: answersArray
 	});
 }
 
@@ -52,4 +56,4 @@ async function sendToUsers(message, type=questionType, batchSize=100) {
   }
 }
 
-module.exports = { postAnswer, sendToUsers }
+module.exports = { postQnA, sendToUsers }

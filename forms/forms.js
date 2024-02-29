@@ -14,12 +14,12 @@ const freeKeys = {
   prize: 'rN9KczVcEMbEiijcgmnrKx',
   numWinners: 'whTVu1SexJaMWAF3bqYo8T'
 };
-const paidKeys = { // TODO
-  date: '7z2iD1MgJdXw31omoXQfUx',
-  answers: 'frW3PwLTLtrTzZwS8Wfzv2',
-  question: 'ngg7uJMweeto8qHsQSyUEG',
-  prize: 'rN9KczVcEMbEiijcgmnrKx',
-  numWinners: 'whTVu1SexJaMWAF3bqYo8T'
+const paidKeys = {
+  date: 'tpJe1fbAnKHf8AbhMsFBGb',
+  answers: 'iuiDCbQqk3D5NC8oTw66ki',
+  question: 'h15WMmMpDHsUd7tWJEoxB1',
+  prize: 'ifkHgkyZGUojizDYUuUyX6',
+  numWinners: 'gCBtpGatA1LdjHEAxeHv43'
 };
 
 // if a form is submitted with the correct endpoint
@@ -53,7 +53,7 @@ app.post('/', (req, res) => {
   });
 
   scheduleEvent(freeInputs, 'FREE');
-  //scheduleEvent(paidInputs, 'PAID');
+  scheduleEvent(paidInputs, 'PAID');
 
   res.sendStatus(200);
 });
@@ -65,10 +65,12 @@ app.listen(port, () => {
 });
 
 function buildText(input, type) {
+  const questions = input['question'].split('\n');
+
   // different message if it's 1 winner vs multiple winners
   const message = input['numWinners'] === 1 ?
-    input['question'].concat('\r\r', "Fastest person wins $", input['prize'], ".")
-    : input['question'].concat('\r\r', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
+    questions[0].concat('\r\r', "Fastest person wins $", input['prize'], ".")
+    : questions[0].concat('\r\r', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
 
   // end time is one hour after start time
   const end = input['date'].substr(0, 12)
