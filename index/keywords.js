@@ -63,7 +63,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 		const convoCount = user.data()['live']['convoCount'];
 		
 		if(live === "FREE" && answers[live][convoCount] === word) {
-			if(convoCount === answers[live] - 1) {
+			if(convoCount === answers[live].length - 1) {
 				// FREE WIN
 				sendMessage("FREE WIN");
 			}
@@ -82,7 +82,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 				sendMessage("DIFF MESSAGE");
 			}
 			else if(answers[live][convoCount] === word) {
-				if(convoCount === answers[live] - 1) {
+				if(convoCount === answers[live].length - 1) {
 					// PAID WIN
 					sendMessage("PAID WIN");
 				}
