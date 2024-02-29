@@ -70,7 +70,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 			else {
 				sendMessage(questions[live][convoCount+1]);
 				await db.collection('users').doc(number).update({
-					'convoCount': convoCount+1
+					['live.convoCount']: convoCount+1
 				});
 			}
 		}
@@ -89,7 +89,7 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 				else {
 					sendMessage(questions[live][convoCount+1]);
 					await db.collection('users').doc(number).update({
-						'convoCount': convoCount+1
+						['live.convoCount']: convoCount+1
 					});
 				}
 			}
