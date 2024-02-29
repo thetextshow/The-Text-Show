@@ -12,9 +12,7 @@ const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
 async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a global var
-	const snapshot = await db.collection('answers').doc('answers').get();
-	const answers = snapshot.data()['answers'];
-
+	
 	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
@@ -48,13 +46,33 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 	else {
 		const live = await whatIsLive();
 
+
 		if(live === "NONE") {
 			// NOT KEY
 			sendMessage("NOT KEY");
+			return;
 		}
-		else if(live === "FREE" && answers["FREE"] === word) {
-			// FREE WIN
-			sendMessage("FREE WIN");
+		
+		// if there is a live question
+		const answersArray = await db.collection('QnA').doc('answers').get();
+		const answers = answersArray.data();
+		const questionsArray = await db.collection('QnA').doc('questions').get();
+		const questions = questionsArray.data();
+
+		const user = await db.collection('users').doc(number).get();
+		const convoCount = user.data()['live']['convoCount'];
+		
+		if(live === "FREE" && answers[live][convoCount] === word) {
+			if(convoCount === answers[live] - 1) {
+				// FREE WIN
+				sendMessage("FREE WIN");
+			}
+			else {
+				sendMessage(questions[live][convoCount+1]);
+				await db.collection('users').doc(number).update({
+					'convoCount': convoCount+1
+				});
+			}
 		}
 		else if(live === "PAID") {
 			paid = await registeredForPaid();
@@ -63,9 +81,17 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 				// DIFF MESSAGE
 				sendMessage("DIFF MESSAGE");
 			}
-			else if(answers["PAID"] === word) {
-				// PAID WIN
-				sendMessage("PAID WIN");
+			else if(answers[live][convoCount] === word) {
+				if(convoCount === answers[live] - 1) {
+					// PAID WIN
+					sendMessage("PAID WIN");
+				}
+				else {
+					sendMessage(questions[live][convoCount+1]);
+					await db.collection('users').doc(number).update({
+						'convoCount': convoCount+1
+					});
+				}
 			}
 		}
 	}
