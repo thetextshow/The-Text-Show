@@ -42,7 +42,7 @@ app.post('/', (req, res) => {
   global.phoneNumber = message?.['from']; // accessible in all files
   // must be a text
   if(message && message['type'] === 'text') {
-  	checkKeyword(message['text']['body']);
+  	checkKeyword(message['text']['body'], message['timestamp']);
     res.sendStatus(200);
     return;
   }

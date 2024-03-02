@@ -41,7 +41,8 @@ async function sendToUsers(message, type=questionType, batchSize=100) {
 		      		type: type,
 		      		wamid: wamid,
 		      		sentTime: parseInt(Date.now() / 1000),
-              convoCount: 0
+              convoCount: 0,
+              answerTime: 0
 		      	}
 		      });
       	})

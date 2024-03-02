@@ -11,7 +11,7 @@ initializeApp();
 const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
-async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a global var
+async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var
 	
 	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
@@ -42,57 +42,75 @@ async function checkKeyword(word, number=phoneNumber) { // phoneNumber is a glob
 		else if(word === "STOP") {
 			await stop();
 		}
+		return;
 	}
-	else {
-		const live = await whatIsLive();
 
+	const live = await whatIsLive();
 
-		if(live === "NONE") {
-			// NOT KEY
-			sendMessage("NOT KEY");
+	if(live === "NONE") {
+		// NOT KEY
+		sendMessage("NOT KEY");
+		return;
+	}
+	
+	// if there is a live question
+	const answersArray = await db.collection('QnA').doc('answers').get();
+	const answers = answersArray.data()[live];
+	const questionsArray = await db.collection('QnA').doc('questions').get();
+	const questions = questionsArray.data()[live];
+
+	const convoCount = user.data()['live']['convoCount'];
+	const time = timestamp - user.data()['live']['sentTime'];
+	
+	if(live === "FREE" && answers[convoCount] === word) {
+		await db.collection('users').doc(number).update({
+			['live.answerTime']: FieldValue.increment(time)
+		});
+
+		if(convoCount === answers.length - 1) {
+			// FREE WIN
+			sendMessage("FREE WIN");
+		}
+		else {
+			sendMessage(questions[convoCount+1])
+				.then(async (wamid) => {
+					await db.collection('users').doc(number).update({
+						['live.convoCount']: convoCount+1,
+						['live.wamid']: wamid
+					});
+				})
+				.catch((error) => {
+      		console.log(error);
+      	});
+		}
+	}
+	else if(live === "PAID" && answers[convoCount] === word) {
+		paid = await registeredForPaid();
+		if(!paid) {
+			// DIFF MESSAGE
+			sendMessage("DIFF MESSAGE");
 			return;
 		}
-		
-		// if there is a live question
-		const answersArray = await db.collection('QnA').doc('answers').get();
-		const answers = answersArray.data();
-		const questionsArray = await db.collection('QnA').doc('questions').get();
-		const questions = questionsArray.data();
 
-		const user = await db.collection('users').doc(number).get();
-		const convoCount = user.data()['live']['convoCount'];
-		
-		if(live === "FREE" && answers[live][convoCount] === word) {
-			if(convoCount === answers[live].length - 1) {
-				// FREE WIN
-				sendMessage("FREE WIN");
-			}
-			else {
-				sendMessage(questions[live][convoCount+1]);
-				await db.collection('users').doc(number).update({
-					['live.convoCount']: convoCount+1
-				});
-			}
+		await db.collection('users').doc(number).update({
+			['live.answerTime']: FieldValue.increment(time)
+		});
+
+		if(convoCount === answers.length - 1) {
+			// PAID WIN
+			sendMessage("PAID WIN");
 		}
-		else if(live === "PAID") {
-			paid = await registeredForPaid();
-
-			if(!paid) {
-				// DIFF MESSAGE
-				sendMessage("DIFF MESSAGE");
-			}
-			else if(answers[live][convoCount] === word) {
-				if(convoCount === answers[live].length - 1) {
-					// PAID WIN
-					sendMessage("PAID WIN");
-				}
-				else {
-					sendMessage(questions[live][convoCount+1]);
+		else {
+			sendMessage(questions[convoCount+1])
+				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
-						['live.convoCount']: convoCount+1
+						['live.convoCount']: convoCount+1,
+						['live.wamid']: wamid
 					});
-				}
-			}
+				})
+				.catch((error) => {
+      		console.log(error);
+      	});
 		}
 	}
 }
@@ -115,6 +133,7 @@ function help() {
 	sendMessage("You typed HELP");
 }
 
+// TODO
 async function stop(number=phoneNumber) {
 	await db.collection('users').doc(number).delete();
 	sendMessage("You have been unsubscribed from The Text Show. Send PLAY to resubscribe.");
@@ -133,7 +152,7 @@ async function registeredForPaid(number=phoneNumber) {
 	return user.exists;
 }
 
-// records the actual time the player received the question
+// records the actual time the player was sent the question
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	if(user.data()['live']?.['wamid'] === wamid) {
