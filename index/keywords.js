@@ -12,7 +12,6 @@ const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
 async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var
-	
 	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
@@ -32,86 +31,20 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 	 * incorrect during a live competition, or receives an
 	 * informative message about the keywords and competitions.
 	 **/
-	if(word in keywords) {
-		if(word === "PLAY") {
+	switch (word) {
+		case 'PLAY':
 			await play();
-		}
-		else if(word === "HELP") {
+			break;
+		case 'HELP':
 			help();
-		}
-		else if(word === "STOP") {
+			break;
+		case 'STOP':
 			await stop();
-		}
-		return;
-	}
-
-	const live = await whatIsLive();
-
-	if(live === "NONE") {
-		// NOT KEY
-		sendMessage("NOT KEY");
-		return;
-	}
-	
-	// if there is a live question
-	const answersArray = await db.collection('QnA').doc('answers').get();
-	const answers = answersArray.data()[live];
-	const questionsArray = await db.collection('QnA').doc('questions').get();
-	const questions = questionsArray.data()[live];
-
-	const convoCount = user.data()['live']['convoCount'];
-	const time = timestamp - user.data()['live']['sentTime'];
-	
-	if(live === "FREE" && answers[convoCount] === word) {
-		await db.collection('users').doc(number).update({
-			['live.answerTime']: FieldValue.increment(time)
-		});
-
-		if(convoCount === answers.length - 1) {
-			// FREE WIN
-			sendMessage("FREE WIN");
-		}
-		else {
-			sendMessage(questions[convoCount+1])
-				.then(async (wamid) => {
-					await db.collection('users').doc(number).update({
-						['live.convoCount']: convoCount+1,
-						['live.wamid']: wamid
-					});
-				})
-				.catch((error) => {
-      		console.log(error);
-      	});
-		}
-	}
-	else if(live === "PAID" && answers[convoCount] === word) {
-		paid = await registeredForPaid();
-		if(!paid) {
-			// DIFF MESSAGE
-			sendMessage("DIFF MESSAGE");
-			return;
-		}
-
-		await db.collection('users').doc(number).update({
-			['live.answerTime']: FieldValue.increment(time)
-		});
-
-		if(convoCount === answers.length - 1) {
-			// PAID WIN
-			sendMessage("PAID WIN");
-		}
-		else {
-			sendMessage(questions[convoCount+1])
-				.then(async (wamid) => {
-					await db.collection('users').doc(number).update({
-						['live.convoCount']: convoCount+1,
-						['live.wamid']: wamid
-					});
-				})
-				.catch((error) => {
-      		console.log(error);
-      	});
-		}
+			break;
+		default:
+			const live = await whatIsLive();
+			if(live === "NONE") sendMessage("NOT KEY");
+			else await handleAnswer(live, user, word, timestamp);
 	}
 }
 
@@ -150,6 +83,39 @@ async function whatIsLive(number=phoneNumber) {
 async function registeredForPaid(number=phoneNumber) {
 	const user = await db.collection('paid').doc(number).get();
 	return user.exists;
+}
+
+async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
+	const answersArray = await db.collection('QnA').doc('answers').get();
+	const answers = answersArray.data()[type];
+	const questionsArray = await db.collection('QnA').doc('questions').get();
+	const questions = questionsArray.data()[type];
+
+	const convoCount = user.data()['live']['convoCount'];
+	const time = timestamp - user.data()['live']['sentTime'];
+	
+	if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
+		await db.collection('users').doc(number).update({
+			['live.answerTime']: FieldValue.increment(time)
+		});
+
+		if(convoCount === answers.length - 1) {
+			// WIN
+			sendMessage(type + " WIN");
+		}
+		else {
+			sendMessage(questions[convoCount+1])
+				.then(async (wamid) => {
+					await db.collection('users').doc(number).update({
+						['live.convoCount']: convoCount+1,
+						['live.wamid']: wamid
+					});
+				})
+				.catch((error) => {
+      		console.log(error);
+      	});
+		}
+	}
 }
 
 // records the actual time the player was sent the question
