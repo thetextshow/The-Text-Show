@@ -12,6 +12,7 @@ const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
 async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var
+	console.log(number + " said " + word);
 	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
@@ -95,13 +96,15 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	const time = timestamp - user.data()['live']['sentTime'];
 	
 	if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
+		sendMessage("Correct !!!");
+
 		await db.collection('users').doc(number).update({
 			['live.answerTime']: FieldValue.increment(time)
 		});
 
 		if(convoCount === answers.length - 1) {
 			// WIN
-			sendMessage(type + " WIN");
+			sendMessage("YOU WIN !!!");
 		}
 		else {
 			sendMessage(questions[convoCount+1])
@@ -115,6 +118,9 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
       		console.log(error);
       	});
 		}
+	}
+	else {
+		sendMessage("WRONG !!!");
 	}
 }
 
