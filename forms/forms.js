@@ -35,13 +35,13 @@ app.post('/', (req, res) => {
     });
     if(!password) {
       console.log("Unathenticated Request Attempted!");
-      res.sendStatus(200);
+      res.sendStatus(400);
       return;
     }
   }
   catch (e) {
     console.log("Unathenticated Request Attempted!");
-    res.sendStatus(200);
+    res.sendStatus(400);
     return;
   }
   

@@ -96,7 +96,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	const time = timestamp - user.data()['live']['sentTime'];
 	
 	if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
-		sendMessage("Correct !!!");
+		sendMessage("CORRECT !!!");
 
 		await db.collection('users').doc(number).update({
 			['live.answerTime']: FieldValue.increment(time)
