@@ -96,11 +96,16 @@ function scheduleEvent(input, type) {
   addToCalendar(event);
 
   // start the task 2 minutes before the message goes out
-  const seconds = (new Date(input['date']).getTime() / 1000) - 120;
+  const startTime = (new Date(input['date']).getTime() / 1000) - 120;
   // add the original form input
   event['input'] = input;
   event['type'] = type;
-  createHttpTask(event, seconds);
+  event['phase'] = 'start';
+  createHttpTask(event, startTime);
+
+  const stopTime = (new Date(input['date']).getTime() / 1000) + 3600;
+  event['phase'] = 'stop';
+  createHttpTask(event, stopTime);
 }
 
 

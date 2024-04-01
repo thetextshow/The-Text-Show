@@ -17,6 +17,16 @@ async function postQnA(question, answer, type=questionType) {
 	});
 }
 
+async function removeQnA(type=questionType) {
+  await db.collection('QnA').doc('questions').update({
+    [`${type}`]: FieldValue.delete()
+  });
+
+  await db.collection('QnA').doc('answers').update({
+    [`${type}`]: FieldValue.delete()
+  });
+}
+
 // Function to fetch users in batches
 async function sendToUsers(message, type=questionType, batchSize=100) {
   let lastUser = null;
@@ -58,4 +68,16 @@ async function sendToUsers(message, type=questionType, batchSize=100) {
   }
 }
 
-module.exports = { postQnA, sendToUsers }
+async function sendToWinners(numWinners) {
+  const winners = await db.collection('users')
+    .where('live.allCorrect', '==', true)
+    .orderBy('live.answerTime')
+    .limit(numWinners)
+    .get();
+
+  winners.forEach(doc => {
+    sendMessage( "You actually won.", doc.id);
+  });
+}
+
+module.exports = { postQnA, removeQnA, sendToUsers, sendToWinners }

@@ -77,7 +77,7 @@ async function stop(number=phoneNumber) {
 // competition is live
 async function whatIsLive(number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
-	return user.data()['live'] ? user.data()['live']['type'] : "NONE";
+	return user.data()['live']?.['type'] ? user.data()['live']['type'] : "NONE";
 }
 
 // returns true if the player paid for the $1 competition
@@ -104,7 +104,11 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 
 		if(convoCount === answers.length - 1) {
 			// WIN
-			sendMessage("YOU WIN !!!");
+			sendMessage("You got everything correct! We'll let you know if you won soon.");
+
+			await db.collection('users').doc(number).update({
+				['live.allCorrect']: true
+			});
 		}
 		else {
 			sendMessage(questions[convoCount+1])
