@@ -21,7 +21,7 @@ app.post('/', (req, res) => {
   }
   else if(event['phase'] === 'stop') {
     removeQnA();
-    sendToWinners(event['numWinners']);
+    sendToWinners(event['input']['numWinners']);
   }
 
   res.sendStatus(200);
