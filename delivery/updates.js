@@ -76,7 +76,7 @@ async function sendToWinners(numWinners) {
     .get();
 
   winners.forEach(doc => {
-    sendMessage( "You actually won.", doc.id);
+    sendMessage( "You actually won.", "none", doc.id);
   });
 }
 
