@@ -96,22 +96,20 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	const time = timestamp - user.data()['live']['sentTime'];
 	
 	if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
-		sendMessage("CORRECT !!!");
-
 		await db.collection('users').doc(number).update({
 			['live.answerTime']: FieldValue.increment(time)
 		});
 
 		if(convoCount === answers.length - 1) {
 			// WIN
-			sendMessage("You got everything correct! We'll let you know if you won soon.");
+			sendMessage("Correct!\n\n" + "You got everything correct! We'll let you know if you won soon.");
 
 			await db.collection('users').doc(number).update({
 				['live.allCorrect']: true
 			});
 		}
 		else {
-			sendMessage(questions[convoCount+1])
+			sendMessage("Correct! Next Question:\n\n" + questions[convoCount+1])
 				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
 						['live.convoCount']: convoCount+1,
