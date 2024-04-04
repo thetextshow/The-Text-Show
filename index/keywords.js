@@ -4,7 +4,7 @@
 
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const sendMessage = require('../messaging/messaging.js');
+const { setDefaultNumber, sendMessage } = require('../messaging/messaging.js');
 
 initializeApp();
 
@@ -14,6 +14,7 @@ const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 let phoneNumber;
 function setPhoneNumber(number) {
 	phoneNumber = number;
+	setDefaultNumber(number);
 }
 
 async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var

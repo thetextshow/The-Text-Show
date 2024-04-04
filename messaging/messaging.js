@@ -6,7 +6,12 @@ const axios = require('axios');
 require('dotenv').config();
 const auth_token = process.env.AUTH_TOKEN;
 
-function sendMessage(msg, template='none', to=phoneNumber) { // phoneNumber is a global var
+let phoneNumber;
+function setDefaultNumber(number) {
+	phoneNumber = number;
+}
+
+function sendMessage(msg, template='none', to=phoneNumber) {
 	const data = template === 'none' ? 
 		JSON.stringify({
 		  "messaging_product": "whatsapp",
@@ -56,4 +61,4 @@ function sendMessage(msg, template='none', to=phoneNumber) { // phoneNumber is a
 		});
 }
 
-module.exports = sendMessage;
+module.exports = { setDefaultNumber, sendMessage };
