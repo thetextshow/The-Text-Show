@@ -11,6 +11,11 @@ initializeApp();
 const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
+let phoneNumber;
+function setPhoneNumber(number) {
+	phoneNumber = number;
+}
+
 async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var
 	console.log(number + " said " + word);
 	// if the user does not exist, we need them to opt in first
@@ -136,4 +141,4 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	}
 }
 
-module.exports = { checkKeyword, addTimestamp };
+module.exports = { setPhoneNumber, checkKeyword, addTimestamp };

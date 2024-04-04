@@ -1,7 +1,7 @@
 require('dotenv').config();
 const crypto = require('crypto');
 const express = require('express');
-const { checkKeyword, addTimestamp } = require('./keywords.js');
+const { setPhoneNumber, checkKeyword, addTimestamp } = require('./keywords.js');
 
 const app = express();
 app.use(express.json()); 
@@ -39,7 +39,7 @@ app.post('/', (req, res) => {
 
   // process messages
   const message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-  global.phoneNumber = message?.['from']; // accessible in all files
+  setPhoneNumber(message?.['from']);
   // must be a text
   if(message && message['type'] === 'text') {
   	checkKeyword(message['text']['body'], message['timestamp']);
@@ -49,7 +49,7 @@ app.post('/', (req, res) => {
 
   // process statuses
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
-  global.phoneNumber = status?.['recipient_id']; // accessible in all files
+  setPhoneNumber(status?.['recipient_id']);
   // must be a "sent" status
   if(status && status['status'] === 'sent') {
     addTimestamp(status['id'], status['timestamp']);
