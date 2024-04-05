@@ -53,7 +53,7 @@ function sendMessage(msg, template='none', to=phoneNumber) {
 
 	return axios.request(config)
 		.then((response) => {
-		  console.log(response.data);
+		  console.log("Sent", msg, "to", to);
 		  return response.data['messages'][0]['id'];
 		})
 		.catch((error) => {
