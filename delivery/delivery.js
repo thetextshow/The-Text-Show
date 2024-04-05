@@ -1,5 +1,5 @@
 const express = require('express');
-const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners } = require('./updates.js');
+const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners, sendAnswers } = require('./updates.js');
 
 const app = express();
 app.use(express.json()); 
@@ -24,6 +24,7 @@ app.post('/', (req, res) => {
   else if(event['phase'] === 'stop') {
     removeQnA();
     sendToWinners(event['input']['numWinners']);
+    sendAnswers(event['input']['question'], event['input']['answers']);
   }
 
   res.sendStatus(200);
