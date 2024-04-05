@@ -107,6 +107,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		});
 
 		if(convoCount === answers.length - 1) {
+			console.log("Correct win", number);
 			// WIN
 			sendMessage("Correct!\n\n" + "You got everything correct! We'll let you know if you won soon.");
 
@@ -115,6 +116,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 			});
 		}
 		else {
+			console.log("Correct", number);
 			sendMessage("Correct! Next Question:\n\n" + questions[convoCount+1])
 				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
@@ -128,6 +130,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		}
 	}
 	else {
+		console.log("Wrong", number);
 		sendMessage("WRONG !!!");
 	}
 }
