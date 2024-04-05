@@ -91,7 +91,7 @@ async function sendAnswers(questions, answers) {
   const questionsArray = questions.split('\n');
   const answersArray = answers.split('\n');
   for(let i = 0; i < questionsArray.length; i++) {
-    message += "\n\nQ: " + questionsArray[i] + "\nA: " + answersArray[i];
+    message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i];
   }
   console.log(message);
 
