@@ -28,7 +28,7 @@ async function removeQnA(type=questionType) {
 }
 
 // Function to fetch users in batches
-async function sendToUsers(message, type=questionType, batchSize=100) {
+async function doInBatches(todo, batchSize=100) {
   let lastUser = null;
 
   // Loop until all users are fetched
@@ -43,29 +43,33 @@ async function sendToUsers(message, type=questionType, batchSize=100) {
     query = query.limit(batchSize);
     const snapshot = await query.get();
 
-    snapshot.forEach(doc => {
-    	sendMessage(message, 'question', doc.id)
-      	.then(async (wamid) => {
-		      await db.collection('users').doc(doc.id).update({
-		      	live: {
-		      		type: type,
-		      		wamid: wamid,
-		      		sentTime: parseInt(Date.now() / 1000),
-              convoCount: 0,
-              answerTime: 0
-		      	}
-		      });
-      	})
-      	.catch((error) => {
-      		console.log(error);
-      	});
-    });
+    todo(snapshot);
 
     // Update lastUser for the next iteration
     if (snapshot.size > 0) {
       lastUser = snapshot.docs[snapshot.size - 1];
     } else break;
   }
+}
+
+async function sendToBatch(message, batch, type=questionType) {
+  batch.forEach(doc => {
+    sendMessage(message, 'question', doc.id)
+      .then(async (wamid) => {
+        await db.collection('users').doc(doc.id).update({
+          live: {
+            type: type,
+            wamid: wamid,
+            sentTime: parseInt(Date.now() / 1000),
+            convoCount: 0,
+            answerTime: 0
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
 }
 
 async function sendToWinners(numWinners) {
@@ -80,4 +84,4 @@ async function sendToWinners(numWinners) {
   });
 }
 
-module.exports = { postQnA, removeQnA, sendToUsers, sendToWinners }
+module.exports = { postQnA, removeQnA, doInBatches, sendToBatch, sendToWinners }

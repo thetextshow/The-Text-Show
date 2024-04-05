@@ -1,5 +1,5 @@
 const express = require('express');
-const { postQnA, sendToUsers, removeQnA, sendToWinners } = require('./updates.js');
+const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners } = require('./updates.js');
 
 const app = express();
 app.use(express.json()); 
@@ -16,7 +16,9 @@ app.post('/', (req, res) => {
     // send the message out 1 minute early bc of Whatsapp delay
     const delay = new Date(event['input']['date']) - new Date() - 60000;
     setTimeout(() => {
-    	sendToUsers(event['description']);
+      doInBatches((batch) => {
+        sendToBatch(event['description'], batch);
+      });
     }, delay);
   }
   else if(event['phase'] === 'stop') {
