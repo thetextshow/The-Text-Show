@@ -88,8 +88,8 @@ async function sendAnswers(questions, answers) {
   let message = "Thank you everybody for playing The Text Show!" +
     " Here is an overview of today's answers.";
   
-  const questionsArray = question.split('\n');
-  const answersArray = answer.split('\n');
+  const questionsArray = questions.split('\n');
+  const answersArray = answers.split('\n');
   for(let i = 0; i < questionsArray.length; i++) {
     message += "\n\nQ: " + questionsArray[i] + "\nA: " + answersArray[i];
   }
