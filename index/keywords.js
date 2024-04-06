@@ -49,7 +49,7 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			await stop();
 			break;
 		default:
-			const live = await whatIsLive();
+			const live = await whatIsLive(user);
 			if(live === "NONE") sendMessage("NOT KEY");
 			else await handleAnswer(live, user, word, timestamp);
 	}
@@ -81,8 +81,8 @@ async function stop(number=phoneNumber) {
 
 // returns "FREE", "PAID", or "NONE" based on which
 // competition is live
-async function whatIsLive(number=phoneNumber) {
-	const user = await db.collection('users').doc(number).get();
+async function whatIsLive(user='none', number=phoneNumber) {
+	if(user === 'none') user = await db.collection('users').doc(number).get();
 	return user.data()['live']?.['type'] ? user.data()['live']['type'] : "NONE";
 }
 
