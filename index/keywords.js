@@ -93,6 +93,8 @@ async function registeredForPaid(number=phoneNumber) {
 }
 
 async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
+	console.log("acceptAnswer:", user.data()['live']['acceptAnswer'],
+		"--- Word:", word);
 	if(!(user.data()['live']['acceptAnswer'])) return;
 
 	await db.collection('users').doc(number).update({
