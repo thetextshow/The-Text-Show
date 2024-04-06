@@ -31,12 +31,6 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 		return;
 	} 
 
-	const live = await whatIsLive(user);
-	if(live !== "NONE") {
-		await handleAnswer(live, user, word, timestamp);
-		return;
-	}
-
 	/**
 	 * If the user sends a keyword, we run that command.
 	 * Otherwise, we respond based on what is live. The user
@@ -55,7 +49,9 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			await stop();
 			break;
 		default:
-			sendMessage("NOT KEY");
+			const live = await whatIsLive(user);
+			if(live === "NONE") sendMessage("NOT KEY");
+			else await handleAnswer(live, user, word, timestamp);
 	}
 }
 
@@ -133,7 +129,8 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
 						['live.convoCount']: convoCount+1,
-						['live.wamid']: wamid
+						['live.wamid']: wamid,
+						['live.acceptAnswer']: true
 					});
 				})
 				.catch((error) => {
@@ -151,8 +148,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 // also sets acceptAnswer to true
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
-	const live = await whatIsLive(user);
-	if(live !== "NONE") {
+	if(user.data()['live']?.['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
 			['live.sentTime']: timestamp,
 			['live.acceptAnswer']: true
@@ -160,8 +156,6 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 			console.log("acceptAnswer should be true");
 		});
 	}
-
-	//if(user.data()['live']?.['wamid'] === wamid) {}
 }
 
 module.exports = { setPhoneNumber, checkKeyword, addTimestamp };
