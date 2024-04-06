@@ -93,6 +93,12 @@ async function registeredForPaid(number=phoneNumber) {
 }
 
 async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
+	if(!(user.data()['live']['acceptAnswer'])) return;
+
+	await db.collection('users').doc(number).update({
+		['live.acceptAnswer']: false
+	});
+
 	const answersArray = await db.collection('QnA').doc('answers').get();
 	const answers = answersArray.data()[type];
 	const questionsArray = await db.collection('QnA').doc('questions').get();
@@ -131,16 +137,18 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	}
 	else {
 		console.log("Wrong", number);
-		sendMessage("WRONG !!!");
+		sendMessage("WRONG !!! u LOSE");
 	}
 }
 
 // records the actual time the player was sent the question
+// also sets acceptAnswer to true
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	if(user.data()['live']?.['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
-			['live.sentTime']: timestamp
+			['live.sentTime']: timestamp,
+			['live.acceptAnswer']: true
 		});
 	}
 }
