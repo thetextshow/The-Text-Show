@@ -151,6 +151,8 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 		await db.collection('users').doc(number).update({
 			['live.sentTime']: timestamp,
 			['live.acceptAnswer']: true
+		}).then(() => {
+			console.log("acceptAnswer should be true");
 		});
 	}
 }
