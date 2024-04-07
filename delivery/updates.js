@@ -56,6 +56,7 @@ async function sendToBatch(message, batch, type=questionType) {
   batch.forEach(doc => {
     sendMessage(message, 'question', doc.id)
       .then(async (wamid) => {
+        wamid = wamid.split('.')[1]
         await db.collection('users').doc(doc.id).update({
           live: {
             type: type,
