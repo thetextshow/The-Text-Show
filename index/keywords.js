@@ -93,8 +93,6 @@ async function registeredForPaid(number=phoneNumber) {
 }
 
 async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
-	console.log("acceptAnswer:", user.data()['live']['acceptAnswer'],
-		"--- Word:", word);
 	if(!(user.data()['live']['acceptAnswer'])) return;
 
 	await db.collection('users').doc(number).update({
@@ -115,7 +113,6 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		});
 
 		if(convoCount === answers.length - 1) {
-			console.log("Correct win", number);
 			// WIN
 			sendMessage("Correct!\n\n" + "You got everything correct! We'll let you know if you won soon.");
 
@@ -124,7 +121,6 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 			});
 		}
 		else {
-			console.log("Correct", number);
 			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1];
 			sendMessage(msg)
 				.then(async (wamid) => {
@@ -141,7 +137,6 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		}
 	}
 	else {
-		console.log("Wrong", number);
 		sendMessage("WRONG !!! u LOSE");
 	}
 
@@ -164,8 +159,6 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 			['live.sentTime']: timestamp,
 			[`live.history.${wamid}.msgTime`]: timestamp,
 			['live.acceptAnswer']: true
-		}).then(() => {
-			console.log("acceptAnswer should be true");
 		});
 		return;
 	}

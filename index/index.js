@@ -49,7 +49,6 @@ app.post('/', (req, res) => {
 
   // process statuses
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
-  console.log(status);
   setPhoneNumber(status?.['recipient_id']);
   // must be a "sent" status
   if(status && status['status'] === 'sent') {
