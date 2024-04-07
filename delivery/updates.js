@@ -63,7 +63,11 @@ async function sendToBatch(message, batch, type=questionType) {
             sentTime: parseInt(Date.now() / 1000),
             convoCount: 0,
             answerTime: 0,
-            acceptAnswer: false
+            acceptAnswer: false,
+            history: [{
+              "msg": message,
+              "wamid": wamid
+            }]
           }
         });
       })

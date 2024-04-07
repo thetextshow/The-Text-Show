@@ -95,7 +95,7 @@ async function registeredForPaid(number=phoneNumber) {
 async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	console.log("acceptAnswer:", user.data()['live']['acceptAnswer'],
 		"--- Word:", word);
-	//if(!(user.data()['live']['acceptAnswer'])) return;
+	if(!(user.data()['live']['acceptAnswer'])) return;
 
 	await db.collection('users').doc(number).update({
 		['live.acceptAnswer']: false
@@ -125,11 +125,15 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		}
 		else {
 			console.log("Correct", number);
-			sendMessage("Correct! Next Question:\n\n" + questions[convoCount+1])
+			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1];
+			sendMessage(msg)
 				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
 						['live.convoCount']: convoCount+1,
-						['live.wamid']: wamid,
+						[`live.history.${convoCount+1}.wamid`]: wamid,
+						[`live.history.${convoCount+1}.msg`]: msg,
+						[`live.history.${convoCount}.reply`]: word,
+						[`live.history.${convoCount}.replyTime`]: timestamp,
 						['live.acceptAnswer']: true
 					});
 				})
@@ -141,6 +145,10 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	else {
 		console.log("Wrong", number);
 		sendMessage("WRONG !!! u LOSE");
+		await db.collection('users').doc(number).update({
+			[`live.history.${convoCount}.reply`]: word,
+			[`live.history.${convoCount}.replyTime`]: timestamp
+		});
 	}
 }
 
@@ -148,9 +156,11 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 // also sets acceptAnswer to true
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
+	const convoCount = user.data()['live']['convoCount'];
 	if(user.data()['live']?.['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
 			['live.sentTime']: timestamp,
+			[`live.history.${convoCount}.msgTime`]: timestamp,
 			['live.acceptAnswer']: true
 		}).then(() => {
 			console.log("acceptAnswer should be true");
