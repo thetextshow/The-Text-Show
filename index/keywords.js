@@ -132,8 +132,6 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 						['live.convoCount']: convoCount+1,
 						[`live.history.${convoCount+1}.wamid`]: wamid,
 						[`live.history.${convoCount+1}.msg`]: msg,
-						[`live.history.${convoCount}.reply`]: word,
-						[`live.history.${convoCount}.replyTime`]: timestamp,
 						['live.acceptAnswer']: true
 					});
 				})
@@ -145,11 +143,12 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	else {
 		console.log("Wrong", number);
 		sendMessage("WRONG !!! u LOSE");
-		await db.collection('users').doc(number).update({
-			[`live.history.${convoCount}.reply`]: word,
-			[`live.history.${convoCount}.replyTime`]: timestamp
-		});
 	}
+
+	await db.collection('users').doc(number).update({
+		[`live.history.${convoCount}.reply`]: word,
+		[`live.history.${convoCount}.replyTime`]: timestamp
+	});
 }
 
 // records the actual time the player was sent the question
