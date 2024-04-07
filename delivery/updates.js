@@ -29,6 +29,12 @@ async function removeQnA(type=questionType) {
 
 // Function to fetch users in batches
 async function doInBatches(todo, batchSize=100) {
+  if(process.env.dev) {
+    const user = await db.collection('users').doc(process.env.dev).get();)
+    todo(user);
+    return;
+  }
+  
   let lastUser = null;
 
   // Loop until all users are fetched
