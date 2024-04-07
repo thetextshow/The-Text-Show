@@ -156,8 +156,10 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 // also sets acceptAnswer to true
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
+	if(whatIsLive(user) === "NONE") return;
+
 	const convoCount = user.data()['live']['convoCount'];
-	if(user.data()['live']?.['wamid'] === wamid) {
+	if(user.data()['live']['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
 			['live.sentTime']: timestamp,
 			[`live.history.${convoCount}.msgTime`]: timestamp,
@@ -165,7 +167,12 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 		}).then(() => {
 			console.log("acceptAnswer should be true");
 		});
+		return;
 	}
+
+	await db.collection('users').doc(number).update({
+		[`live.history.${convoCount}.msgTime`]: timestamp
+	})
 }
 
 module.exports = { setPhoneNumber, checkKeyword, addTimestamp };
