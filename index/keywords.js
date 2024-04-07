@@ -130,8 +130,8 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 				.then(async (wamid) => {
 					await db.collection('users').doc(number).update({
 						['live.convoCount']: convoCount+1,
-						[`live.history.${convoCount+1}.wamid`]: wamid,
-						[`live.history.${convoCount+1}.msg`]: msg,
+						[`live.history.${wamid}.msg`]: msg,
+						[`live.wamid`]: wamid,
 						['live.acceptAnswer']: true
 					});
 				})
@@ -145,9 +145,10 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		sendMessage("WRONG !!! u LOSE");
 	}
 
+	const oldWamid = user.data()['live']['wamid'];
 	await db.collection('users').doc(number).update({
-		[`live.history.${convoCount}.reply`]: word,
-		[`live.history.${convoCount}.replyTime`]: timestamp
+		[`live.history.${oldWamid}.reply`]: word,
+		[`live.history.${oldWamid}.replyTime`]: timestamp
 	});
 }
 
@@ -161,7 +162,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	if(user.data()['live']['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
 			['live.sentTime']: timestamp,
-			[`live.history.${convoCount}.msgTime`]: timestamp,
+			[`live.history.${wamid}.msgTime`]: timestamp,
 			['live.acceptAnswer']: true
 		}).then(() => {
 			console.log("acceptAnswer should be true");
@@ -170,7 +171,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	}
 
 	await db.collection('users').doc(number).update({
-		[`live.history.${convoCount}.msgTime`]: timestamp
+		[`live.history.${wamid}.msgTime`]: timestamp
 	})
 }
 
