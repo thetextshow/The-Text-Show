@@ -64,7 +64,11 @@ async function sendToBatch(message, batch, type=questionType) {
             convoCount: 0,
             answerTime: 0,
             acceptAnswer: false,
-            [`history.${wamid}.msg`]: message
+            history: {
+              [`${wamid}`]: {
+                msg: message
+              }
+            }
           }
         });
       })
