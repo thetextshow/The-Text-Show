@@ -128,6 +128,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1];
 			sendMessage(msg)
 				.then(async (wamid) => {
+					wamid = wamid.split('.')[1]
 					await db.collection('users').doc(number).update({
 						['live.convoCount']: convoCount+1,
 						[`live.history.${wamid}.msg`]: msg,
@@ -158,6 +159,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	if(whatIsLive(user) === "NONE") return;
 
+ wamid = wamid.split('.')[1]
 	const convoCount = user.data()['live']['convoCount'];
 	if(user.data()['live']['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
