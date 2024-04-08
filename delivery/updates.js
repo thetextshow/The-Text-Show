@@ -67,7 +67,6 @@ async function sendToBatch(message, batch, type=questionType) {
           live: {
             type: type,
             wamid: wamid,
-            sentTime: parseInt(Date.now() / 1000),
             convoCount: 0,
             answerTime: 0,
             acceptAnswer: false,
