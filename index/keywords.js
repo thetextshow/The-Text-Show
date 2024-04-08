@@ -152,7 +152,8 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 // also sets acceptAnswer to true
 async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
-	if(whatIsLive(user) === "NONE") return;
+	const live = await whatIsLive(user);
+	if(live === "NONE") return;
 
   wamid = wamid.split('.')[1];
 	// the first message, which is sent via template
