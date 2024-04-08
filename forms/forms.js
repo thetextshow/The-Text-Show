@@ -103,9 +103,9 @@ function scheduleEvent(input, type) {
   event['phase'] = 'start';
   createHttpTask(event, startTime);
 
-  // const stopTime = (new Date(input['date']).getTime() / 1000) + 3600;
-  // event['phase'] = 'stop';
-  // createHttpTask(event, stopTime);
+  const stopTime = (new Date(input['date']).getTime() / 1000) + 3600;
+  event['phase'] = 'stop';
+  createHttpTask(event, stopTime);
 }
 
 
