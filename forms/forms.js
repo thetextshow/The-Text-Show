@@ -68,9 +68,11 @@ function buildText(input, type) {
   const questions = input['question'].split('\n');
 
   // different message if it's 1 winner vs multiple winners
-  const message = input['numWinners'] === 1 ?
-    questions[0].concat('\r\r', "Fastest person wins $", input['prize'], ".")
-    : questions[0].concat('\r\r', "Fastest ", input['numWinners'], " people win $", input['prize'], " each.");
+  let message = input['numWinners'] === 1 ?
+    "Fastest person wins $" + input['prize'] + "."
+    : "Fastest " + input['numWinners'] + " people win $" + input['prize'] + " each.";
+  message += "\r\r" + questions[0]
+          + "\r\r" + "Only your FIRST answer will be considered.";
 
   // end time is one hour after start time
   const end = input['date'].substr(0, 12)

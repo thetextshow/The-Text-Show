@@ -126,7 +126,8 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 			});
 		}
 		else {
-			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1];
+			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1]
+								+ "\n\nOnly your FIRST answer will be considered.";
 			sendMessage(msg)
 				.then(async (wamid) => {
 					wamid = wamid.split('.')[1]
