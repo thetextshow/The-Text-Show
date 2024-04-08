@@ -153,7 +153,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	if(whatIsLive(user) === "NONE") return;
 
- wamid = wamid.split('.')[1];
+  wamid = wamid.split('.')[1];
 	// the first message, which is sent via template
 	if(user.data()['live']['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({

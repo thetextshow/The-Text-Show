@@ -23,8 +23,10 @@ app.post('/', (req, res) => {
   }
   else if(event['phase'] === 'stop') {
     removeQnA();
-    sendToWinners(event['input']['numWinners']);
-    sendAnswers(event['input']['question'], event['input']['answers']);
+    sendToWinners(event['input']['numWinners'])
+      .then(() => {
+        sendAnswers(event['input']['question'], event['input']['answers']);
+      });
   }
 
   res.sendStatus(200);

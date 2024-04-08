@@ -30,7 +30,7 @@ async function removeQnA(type=questionType) {
 // Function to fetch users in batches
 async function doInBatches(todo, batchSize=100) {
   if(process.env.dev) {
-    const user = await db.collection('users').doc(process.env.dev).get();)
+    const user = await db.collection('users').doc(process.env.dev).get();
     todo(user);
     return;
   }
@@ -109,7 +109,12 @@ async function sendAnswers(questions, answers) {
 
   doInBatches((batch) => {
     batch.forEach(doc => {
-      sendMessage(message, 'question', doc.id);
+      sendMessage(message, 'question', doc.id)
+        .then(async () => {
+          await db.collection('users').doc(doc.id).update({
+            live: FieldValue.delete()
+          });
+        });
     });
   });
 }
