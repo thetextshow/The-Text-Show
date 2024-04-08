@@ -26,7 +26,7 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			play(false);
 		}
 		else {
-			sendMessage("Send PLAY to opt into The Text Show!");
+			sendMessage("Send PLAY to opt into The Text Show!", number);
 		}
 		return;
 	} 
@@ -50,14 +50,14 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			break;
 		default:
 			const live = await whatIsLive(user);
-			if(live === "NONE") sendMessage("NOT KEY");
+			if(live === "NONE") sendMessage("NOT KEY", number);
 			else await handleAnswer(live, user, word, timestamp);
 	}
 }
 
 async function play(userExists=true, number=phoneNumber) {
 	if(userExists) {
-		sendMessage("You typed PLAY");
+		sendMessage("You typed PLAY", number);
 	}
 	else {
 		await db.collection('users').doc(number).set({
@@ -65,18 +65,18 @@ async function play(userExists=true, number=phoneNumber) {
 			number: number,
 			createdAt: FieldValue.serverTimestamp()
 		});
-		sendMessage("Welcome!");
+		sendMessage("Welcome!", number);
 	}
 }
 
 function help() {
-	sendMessage("You typed HELP");
+	sendMessage("You typed HELP", number);
 }
 
 // TODO
 async function stop(number=phoneNumber) {
 	await db.collection('users').doc(number).delete();
-	sendMessage("You have been unsubscribed from The Text Show. Send PLAY to resubscribe.");
+	sendMessage("You have been unsubscribed from The Text Show. Send PLAY to resubscribe.", number);
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
@@ -128,7 +128,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		else {
 			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1]
 								+ "\n\nOnly your FIRST answer will be considered.";
-			sendMessage(msg)
+			sendMessage(msg, number)
 				.then(async (wamid) => {
 					wamid = wamid.split('.')[1]
 					await db.collection('users').doc(number).update({
@@ -144,7 +144,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		}
 	}
 	else {
-		sendMessage("WRONG !!! u LOSE");
+		sendMessage("WRONG !!! u LOSE", number);
 	}
 }
 
@@ -156,7 +156,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 
   wamid = wamid.split('.')[1];
 	// the first message, which is sent via template
-	if(user.data()['live']['wamid'] === wamid) {
+	if(user.data()['live']?.['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
 			[`live.history.${wamid}.msgTime`]: timestamp,
 			['live.acceptAnswer']: true

@@ -60,7 +60,7 @@ async function doInBatches(todo, batchSize=100) {
 
 async function sendToBatch(message, batch, type=questionType) {
   batch.forEach(doc => {
-    sendMessage(message, 'question', doc.id)
+    sendMessage(message, doc.id, 'question')
       .then(async (wamid) => {
         wamid = wamid.split('.')[1]
         await db.collection('users').doc(doc.id).update({
@@ -92,7 +92,7 @@ async function sendToWinners(numWinners) {
     .get();
 
   winners.forEach(doc => {
-    sendMessage( "You actually won.", "none", doc.id);
+    sendMessage( "You actually won.", doc.id);
   });
 }
 
@@ -109,7 +109,7 @@ async function sendAnswers(questions, answers) {
 
   doInBatches((batch) => {
     batch.forEach(doc => {
-      sendMessage(message, 'question', doc.id)
+      sendMessage(message, doc.id, 'question')
         .then(async () => {
           await db.collection('users').doc(doc.id).update({
             live: FieldValue.delete()

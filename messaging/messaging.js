@@ -11,7 +11,7 @@ function setDefaultNumber(number) {
 	phoneNumber = number;
 }
 
-function sendMessage(msg, template='none', to=phoneNumber) {
+function sendMessage(msg, to=phoneNumber, template='none') {
 	const data = template === 'none' ? 
 		JSON.stringify({
 		  "messaging_product": "whatsapp",
