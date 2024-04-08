@@ -104,9 +104,14 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	const questionsArray = await db.collection('QnA').doc('questions').get();
 	const questions = questionsArray.data()[type];
 
-	const convoCount = user.data()['live']['convoCount'];
-	const time = timestamp - user.data()['live']['sentTime'];
+	const oldWamid = user.data()['live']['wamid'];
+	await db.collection('users').doc(number).update({
+		[`live.history.${oldWamid}.reply`]: word,
+		[`live.history.${oldWamid}.replyTime`]: timestamp
+	});
+	const time = timestamp - user.data()['live']['history'][oldWamid]['msgTime'];
 	
+	const convoCount = user.data()['live']['convoCount'];
 	if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
 		await db.collection('users').doc(number).update({
 			['live.answerTime']: FieldValue.increment(time)
@@ -140,12 +145,6 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 	else {
 		sendMessage("WRONG !!! u LOSE");
 	}
-
-	const oldWamid = user.data()['live']['wamid'];
-	await db.collection('users').doc(number).update({
-		[`live.history.${oldWamid}.reply`]: word,
-		[`live.history.${oldWamid}.replyTime`]: timestamp
-	});
 }
 
 // records the actual time the player was sent the question
@@ -154,11 +153,10 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	const user = await db.collection('users').doc(number).get();
 	if(whatIsLive(user) === "NONE") return;
 
- wamid = wamid.split('.')[1]
-	const convoCount = user.data()['live']['convoCount'];
+ wamid = wamid.split('.')[1];
+	// the first message, which is sent via template
 	if(user.data()['live']['wamid'] === wamid) {
 		await db.collection('users').doc(number).update({
-			['live.sentTime']: timestamp,
 			[`live.history.${wamid}.msgTime`]: timestamp,
 			['live.acceptAnswer']: true
 		});
@@ -167,7 +165,7 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 
 	await db.collection('users').doc(number).update({
 		[`live.history.${wamid}.msgTime`]: timestamp
-	})
+	});
 }
 
 module.exports = { setPhoneNumber, checkKeyword, addTimestamp };
