@@ -31,7 +31,7 @@ async function removeQnA(type=questionType) {
 async function doInBatches(todo, batchSize=100) {
   if(process.env.dev) {
     const user = await db.collection('users').doc(process.env.dev).get();
-    todo(user);
+    todo([user]);
     return;
   }
   
