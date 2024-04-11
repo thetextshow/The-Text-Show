@@ -1,8 +1,13 @@
-
+function format(message, ...values) {
+  values.forEach((value, index) => {
+		  message = message.replace(`%${index}`, value);
+		});
+		return message;
+}
 
 const MSG = Object.freeze({
 	JOIN: "Send PLAY to opt into The Text Show!",
-	NOT_KEY: " is not a keyword. Type HELP to see a list of keywords.",
+	NOT_KEY: "%0 is not a keyword. Type HELP to see a list of keywords.",
 	PLAY: "You typed PLAY",
 	WELCOME: "Welcome!",
 	HELP: "You typed HELP",
@@ -12,4 +17,4 @@ const MSG = Object.freeze({
 	WON: "You actually won."
 });
 
-module.exports = { MSG }
+module.exports = { MSG, format }
