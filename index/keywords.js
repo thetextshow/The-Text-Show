@@ -47,7 +47,7 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			help();
 			break;
 		case 'STOP':
-			await stop();
+			await stop(user);
 			break;
 		default:
 			const live = await whatIsLive(user);
@@ -61,11 +61,18 @@ async function play(userExists=true, number=phoneNumber) {
 		sendMessage(MSG.PLAY, number);
 	}
 	else {
-		await db.collection('users').doc(number).set({
-			balance: 0,
-			number: number,
-			createdAt: FieldValue.serverTimestamp()
-		});
+		const oldUser = await db.collection('oldUsers').doc(number).get();
+		if(oldUser.exists) {
+		  await db.collection('users').doc(number).set(oldUser.data());
+	   await db.collection('oldUsers').doc(number).delete();
+		}
+		else {
+				await db.collection('users').doc(number).set({
+					balance: 0,
+					number: number,
+					createdAt: FieldValue.serverTimestamp()
+				});
+		}
 		sendMessage(MSG.WELCOME, number);
 	}
 }
@@ -74,8 +81,9 @@ function help() {
 	sendMessage(MSG.HELP, number);
 }
 
-// TODO
-async function stop(number=phoneNumber) {
+// move the user to a different collection
+async function stop(user, number=phoneNumber) {
+	await db.collection('oldUsers').doc(number).set(user.data());
 	await db.collection('users').doc(number).delete();
 	sendMessage(MSG.STOP, number);
 }
