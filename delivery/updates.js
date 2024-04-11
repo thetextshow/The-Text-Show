@@ -1,6 +1,7 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { sendMessage } = require('../messaging/messaging.js');
+const { MSG } = require('../messaging/MSG.js');
 
 initializeApp();
 const db = getFirestore();
@@ -92,7 +93,7 @@ async function sendToWinners(numWinners) {
     .get();
 
   winners.forEach(doc => {
-    sendMessage( "You actually won.", doc.id);
+    sendMessage(MSG.WON, doc.id);
   });
 }
 

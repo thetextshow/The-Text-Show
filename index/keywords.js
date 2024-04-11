@@ -5,6 +5,7 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { setDefaultNumber, sendMessage } = require('../messaging/messaging.js');
+const { MSG } = require('../messaging/MSG.js');
 
 initializeApp();
 
@@ -26,7 +27,7 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			play(false);
 		}
 		else {
-			sendMessage("Send PLAY to opt into The Text Show!", number);
+			sendMessage(MSG.JOIN, number);
 		}
 		return;
 	} 
@@ -50,14 +51,14 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 			break;
 		default:
 			const live = await whatIsLive(user);
-			if(live === "NONE") sendMessage("NOT KEY", number);
+			if(live === "NONE") sendMessage(word + MSG.NOT_KEY, number);
 			else await handleAnswer(live, user, word, timestamp);
 	}
 }
 
 async function play(userExists=true, number=phoneNumber) {
 	if(userExists) {
-		sendMessage("You typed PLAY", number);
+		sendMessage(MSG.PLAY, number);
 	}
 	else {
 		await db.collection('users').doc(number).set({
@@ -65,18 +66,18 @@ async function play(userExists=true, number=phoneNumber) {
 			number: number,
 			createdAt: FieldValue.serverTimestamp()
 		});
-		sendMessage("Welcome!", number);
+		sendMessage(MSG.WELCOME, number);
 	}
 }
 
 function help() {
-	sendMessage("You typed HELP", number);
+	sendMessage(MSG.HELP, number);
 }
 
 // TODO
 async function stop(number=phoneNumber) {
 	await db.collection('users').doc(number).delete();
-	sendMessage("You have been unsubscribed from The Text Show. Send PLAY to resubscribe.", number);
+	sendMessage(MSG.STOP, number);
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
@@ -119,7 +120,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 
 		if(convoCount === answers.length - 1) {
 			// WIN
-			sendMessage("Correct!\n\n" + "You got everything correct! We'll let you know if you won soon.");
+			sendMessage(MSG.ALL_CORRECT);
 
 			await db.collection('users').doc(number).update({
 				['live.allCorrect']: true
@@ -144,7 +145,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 		}
 	}
 	else {
-		sendMessage("WRONG !!! u LOSE", number);
+		sendMessage(MSG.WRONG, number);
 	}
 }
 
