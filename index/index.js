@@ -1,7 +1,7 @@
 require('dotenv').config();
 const crypto = require('crypto');
 const express = require('express');
-const { setPhoneNumber, checkKeyword, addTimestamp } = require('./keywords.js');
+const { checkKeyword, addTimestamp } = require('./keywords.js');
 
 const app = express();
 app.use(express.json()); 
@@ -39,20 +39,20 @@ app.post('/', (req, res) => {
 
   // process messages
   const message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-  setPhoneNumber(message?.['from']);
+  const number = message?.['from'];
   // must be a text
   if(message && message['type'] === 'text') {
-  	checkKeyword(message['text']['body'], message['timestamp']);
+  	checkKeyword(message['text']['body'], message['timestamp'], number);
     res.sendStatus(200);
     return;
   }
 
   // process statuses
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
-  setPhoneNumber(status?.['recipient_id']);
+  const number = status?.['recipient_id'];
   // must be a "sent" status
   if(status && status['status'] === 'sent') {
-    addTimestamp(status['id'], status['timestamp']);
+    addTimestamp(status['id'], status['timestamp'], number);
   }
   res.sendStatus(200);
 });
