@@ -5,7 +5,7 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { setDefaultNumber, sendMessage } = require('../messaging/messaging.js');
-const { MSG } = require('../messaging/MSG.js');
+const { MSG, format } = require('../messaging/MSG.js');
 
 initializeApp();
 
@@ -45,7 +45,7 @@ async function checkKeyword(word, timestamp, number) {
 			break;
 		default:
 			const live = await whatIsLive(user, number);
-			if(live === "NONE") sendMessage(word + MSG.NOT_KEY, number);
+			if(live === "NONE") sendMessage(format(MSG.NOT_KEY, word), number);
 			else await handleAnswer(live, user, word, timestamp, number);
 	}
 }
@@ -129,9 +129,7 @@ async function handleAnswer(type, user, word, timestamp, number) {
 			});
 		}
 		else {
-			const msg = "Correct! Next Question:\n\n" + questions[convoCount+1]
-								+ "\n\nOnly your FIRST answer will be considered.";
-			sendMessage(msg, number)
+			sendMessage(format(MSG.CORRECT, questions[convoCount+1]), number)
 				.then(async (wamid) => {
 					wamid = wamid.split('.')[1]
 					await db.collection('users').doc(number).update({
