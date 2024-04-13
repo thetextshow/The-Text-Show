@@ -12,19 +12,13 @@ initializeApp();
 const db = getFirestore();
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
-let phoneNumber;
-function setPhoneNumber(number) {
-	phoneNumber = number;
-	setDefaultNumber(number);
-}
-
-async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumber is a global var
+async function checkKeyword(word, timestamp, number) {
 	console.log(number + " said " + word);
 	// if the user does not exist, we need them to opt in first
 	const user = await db.collection('users').doc(number).get();
 	if(!user.exists) {
 		if(word === "PLAY") {
-			play(false);
+			play(false, number);
 		}
 		else {
 			sendMessage(MSG.JOIN, number);
@@ -41,22 +35,22 @@ async function checkKeyword(word, timestamp, number=phoneNumber) { // phoneNumbe
 	 **/
 	switch (word) {
 		case 'PLAY':
-			await play();
+			await play(true, number);
 			break;
 		case 'HELP':
-			help();
+			help(number);
 			break;
 		case 'STOP':
-			await stop(user);
+			await stop(user, number);
 			break;
 		default:
-			const live = await whatIsLive(user);
+			const live = await whatIsLive(user, number);
 			if(live === "NONE") sendMessage(word + MSG.NOT_KEY, number);
-			else await handleAnswer(live, user, word, timestamp);
+			else await handleAnswer(live, user, word, timestamp, number);
 	}
 }
 
-async function play(userExists=true, number=phoneNumber) {
+async function play(userExists=true, number) {
 	if(userExists) {
 		sendMessage(MSG.PLAY, number);
 	}
@@ -77,12 +71,12 @@ async function play(userExists=true, number=phoneNumber) {
 	}
 }
 
-function help() {
+function help(number) {
 	sendMessage(MSG.HELP, number);
 }
 
 // move the user to a different collection
-async function stop(user, number=phoneNumber) {
+async function stop(user, number) {
 	await db.collection('oldUsers').doc(number).set(user.data());
 	await db.collection('users').doc(number).delete();
 	sendMessage(MSG.STOP, number);
@@ -90,18 +84,18 @@ async function stop(user, number=phoneNumber) {
 
 // returns "FREE", "PAID", or "NONE" based on which
 // competition is live
-async function whatIsLive(user='none', number=phoneNumber) {
+async function whatIsLive(user='none', number) {
 	if(user === 'none') user = await db.collection('users').doc(number).get();
 	return user.data()['live']?.['type'] ? user.data()['live']['type'] : "NONE";
 }
 
 // returns true if the player paid for the $1 competition
-async function registeredForPaid(number=phoneNumber) {
+async function registeredForPaid(number) {
 	const user = await db.collection('paid').doc(number).get();
 	return user.exists;
 }
 
-async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
+async function handleAnswer(type, user, word, timestamp, number) {
 	if(!(user.data()['live']['acceptAnswer'])) return;
 
 	await db.collection('users').doc(number).update({
@@ -159,7 +153,7 @@ async function handleAnswer(type, user, word, timestamp, number=phoneNumber) {
 
 // records the actual time the player was sent the question
 // also sets acceptAnswer to true
-async function addTimestamp(wamid, timestamp, number=phoneNumber) {
+async function addTimestamp(wamid, timestamp, number) {
 	const user = await db.collection('users').doc(number).get();
 	const live = await whatIsLive(user);
 	if(live === "NONE") return;
@@ -179,4 +173,4 @@ async function addTimestamp(wamid, timestamp, number=phoneNumber) {
 	});
 }
 
-module.exports = { setPhoneNumber, checkKeyword, addTimestamp };
+module.exports = { checkKeyword, addTimestamp };
