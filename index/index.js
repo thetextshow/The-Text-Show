@@ -39,7 +39,7 @@ app.post('/', (req, res) => {
 
   // process messages
   const message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
-  const number = message?.['from'];
+  let number = message?.['from'];
   // must be a text
   if(message && message['type'] === 'text') {
   	checkKeyword(message['text']['body'], message['timestamp'], number);
@@ -49,7 +49,7 @@ app.post('/', (req, res) => {
 
   // process statuses
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
-  const number = status?.['recipient_id'];
+  number = status?.['recipient_id'];
   // must be a "sent" status
   if(status && status['status'] === 'sent') {
     addTimestamp(status['id'], status['timestamp'], number);
