@@ -43,7 +43,7 @@ function sendMessage(msg, to=phoneNumber, template='none') {
 	const config = {
 	  method: 'post',
 	  maxBodyLength: Infinity,
-	  url: 'https://graph.facebook.com/v18.0/207079465828031/messages',
+	  url: 'https://graph.facebook.com/v18.0/296755176855080/messages',
 	  headers: { 
 	    'Content-Type': 'application/json', 
 	    'Authorization': 'Bearer ' + auth_token

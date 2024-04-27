@@ -5,6 +5,8 @@ function format(message, ...values) {
 		return message;
 }
 
+// messages in delivery are generated programmatically
+// so they have to be edited from delivery
 const MSG = Object.freeze({
 	JOIN: "Send PLAY to opt into The Text Show!",
 	NOT_KEY: "%0% is not a keyword. Type HELP to see a list of keywords.",
