@@ -2,7 +2,7 @@ function format(message, ...values) {
   values.forEach((value, index) => {
 		  message = message.replace(`%${index}%`, value);
 		});
-		return message;
+	return message;
 }
 
 // messages in delivery are generated programmatically

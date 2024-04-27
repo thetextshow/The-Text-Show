@@ -129,7 +129,8 @@ async function handleAnswer(type, user, word, timestamp, number) {
 			});
 		}
 		else {
-			sendMessage(format(MSG.CORRECT, questions[convoCount+1]), number)
+			const msg = format(MSG.CORRECT, questions[convoCount+1]);
+			sendMessage(msg, number)
 				.then(async (wamid) => {
 					wamid = wamid.split('.')[1]
 					await db.collection('users').doc(number).update({
