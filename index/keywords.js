@@ -122,7 +122,7 @@ async function handleAnswer(type, user, word, timestamp, number) {
 
 		if(convoCount === answers.length - 1) {
 			// WIN
-			sendMessage(MSG.ALL_CORRECT);
+			sendMessage(MSG.ALL_CORRECT, number);
 
 			await db.collection('users').doc(number).update({
 				['live.allCorrect']: true
