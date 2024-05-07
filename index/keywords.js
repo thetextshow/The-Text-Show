@@ -58,14 +58,14 @@ async function play(userExists=true, number) {
 		const oldUser = await db.collection('oldUsers').doc(number).get();
 		if(oldUser.exists) {
 		  await db.collection('users').doc(number).set(oldUser.data());
-	   await db.collection('oldUsers').doc(number).delete();
+	    await db.collection('oldUsers').doc(number).delete();
 		}
 		else {
-				await db.collection('users').doc(number).set({
-					balance: 0,
-					number: number,
-					createdAt: FieldValue.serverTimestamp()
-				});
+			await db.collection('users').doc(number).set({
+				balance: 0,
+				number: number,
+				createdAt: FieldValue.serverTimestamp()
+			});
 		}
 		sendMessage(MSG.WELCOME, number);
 	}
@@ -77,7 +77,8 @@ function help(number) {
 
 // move the user to a different collection
 async function stop(user, number) {
-	await db.collection('oldUsers').doc(number).set(user.data());
+	const { live, ...oldUser } = user.data()
+	await db.collection('oldUsers').doc(number).set(oldUser);
 	await db.collection('users').doc(number).delete();
 	sendMessage(MSG.STOP, number);
 }
