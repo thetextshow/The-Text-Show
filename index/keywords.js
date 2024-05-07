@@ -77,7 +77,7 @@ function help(number) {
 
 // move the user to a different collection
 async function stop(user, number) {
-	const { live, ...oldUser } = user.data()
+	const { live, ...oldUser } = user.data();
 	await db.collection('oldUsers').doc(number).set(oldUser);
 	await db.collection('users').doc(number).delete();
 	sendMessage(MSG.STOP, number);
@@ -87,7 +87,7 @@ async function stop(user, number) {
 // competition is live
 async function whatIsLive(user='none', number) {
 	if(user === 'none') user = await db.collection('users').doc(number).get();
-	return user.data()['live']?.['type'] ? user.data()['live']['type'] : "NONE";
+	return user.data()?.['live']?.['type'] ? user.data()['live']['type'] : "NONE";
 }
 
 // returns true if the player paid for the $1 competition
