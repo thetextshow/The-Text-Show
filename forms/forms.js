@@ -64,7 +64,7 @@ app.post('/', (req, res) => {
   const paidDateString = `${paidDate.getHours()}:${paidDate.getMinutes()}`;
   const paidPrize = paidInputs['numWinners'] === 1 ?
     "Fastest person wins $" + paidInputs['prize'] + "."
-    : "Fastest " + paidInputs['numWinners'] + " people win $" + input['prize'] + " each.";
+    : "Fastest " + paidInputs['numWinners'] + " people win $" + paidInputs['prize'] + " each.";
   const dailyIntro = {
     'description': 'Today\'s schedule:\r\r' +
        freeDateString + ": FREE question. Fastest " + freeInputs['numWinners'] +
