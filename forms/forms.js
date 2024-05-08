@@ -2,6 +2,7 @@ require('dotenv').config({path: './forms/.env.forms'});
 const express = require('express');
 const addToCalendar = require('./calendar.js');
 const createHttpTask = require('./tasks.js');
+const moment = require('moment-timezone');
 
 const app = express();
 app.use(express.json()); 
@@ -72,18 +73,10 @@ app.post('/', (req, res) => {
     'phase': 'schedule'
   };
   let date = new Date(freeInputs['date']);
-  date = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  // Check if the date falls within daylight saving time in PST
-  const isDaylightSaving = date.getTimezoneOffset() === 420; // Offset for PST during daylight saving time is 420 minutes (7 hours)
-  // Set the time to midnight PST (adjusting for daylight saving time)
-  if (isDaylightSaving) {
-      date.setUTCHours(7); // 7 AM UTC corresponds to midnight PST during daylight saving time
-  } else {
-      date.setUTCHours(8); // 8 AM UTC corresponds to midnight PST outside of daylight saving time
-  }
-  date.setUTCMinutes(0);
-  date.setUTCSeconds(0);
-  date.setUTCMilliseconds(0);
+  date = freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+  date = date.split(',')[0];
+  date = moment.tz(date, 'America/Los_Angeles').utc().format();
+  date = new Date(date);
   dailyIntro['time'] = date.getTime() / 1000;
   console.log(dailyIntro['time']);
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
