@@ -73,10 +73,17 @@ app.post('/', (req, res) => {
   };
   let date = new Date(freeInputs['date']);
   date = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
-  date.setMilliseconds(0);
+  // Check if the date falls within daylight saving time in PST
+  const isDaylightSaving = date.getTimezoneOffset() === 420; // Offset for PST during daylight saving time is 420 minutes (7 hours)
+  // Set the time to midnight PST (adjusting for daylight saving time)
+  if (isDaylightSaving) {
+      date.setUTCHours(7); // 7 AM UTC corresponds to midnight PST during daylight saving time
+  } else {
+      date.setUTCHours(8); // 8 AM UTC corresponds to midnight PST outside of daylight saving time
+  }
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
   dailyIntro['time'] = date.getTime() / 1000;
   console.log(dailyIntro['time']);
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
