@@ -55,6 +55,26 @@ app.post('/', (req, res) => {
   scheduleEvent(freeInputs, 'FREE');
   scheduleEvent(paidInputs, 'PAID');
 
+  const paidPrize = paidInputs['numWinners'] === 1 ?
+    "Fastest person wins $" + paidInputs['prize'] + "."
+    : "Fastest " + paidInputs['numWinners'] + " people win $" + input['prize'] + " each.";
+  const dailyIntro = {
+    'description': 'Today\'s schedule:\n\n' +
+       freeInputs['date'].substr(11, 16) + ": FREE question. Fastest " + freeInputs['numWinners'] +
+       " people to answer correctly get to play the $1 question for free!\n\n" +
+       paidInputs['date'].substr(11, 16) + ": $1 question. " + paidPrize
+  };
+  console.log(dailyIntro['description']);
+  const date = new Date(freeInputs['date']);
+  if(date.getHours() < 7) {
+    date.setDate(date.getDate() - 1);
+  }
+  date.setUTCHours(7);
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
+  createHttpTask(dailyIntro, date.toISOString());
+
   res.sendStatus(200);
 });
 
@@ -71,13 +91,12 @@ function buildText(input, type) {
   let message = input['numWinners'] === 1 ?
     "Fastest person wins $" + input['prize'] + "."
     : "Fastest " + input['numWinners'] + " people win $" + input['prize'] + " each.";
-  message += "\r\r" + questions[0]
-          + "\r\r" + "Only your FIRST answer will be considered.";
+  message += "\r\r" + questions[0] + "\r\r" + "Only your FIRST answer will be considered.";
 
   // end time is one hour after start time
-  const end = input['date'].substr(0, 12)
-    + (parseInt(input['date'][12]) + 1).toString()
-    + input['date'].substr(13);
+  const date = new Date(input['date']);
+  date.setHours(date.getHours() + 1);
+  const end = date.toISOString();
 
   return {
     'summary': type + ' Question ' + input['date'].substr(5, 5),
