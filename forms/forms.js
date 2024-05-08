@@ -74,10 +74,12 @@ app.post('/', (req, res) => {
   };
   let date = new Date(freeInputs['date']);
   date = freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+  console.log(date);
   date = date.split(',')[0];
-  date = moment.tz(date, 'America/Los_Angeles').utc().format();
-  date = new Date(date);
-  dailyIntro['time'] = date.getTime() / 1000;
+  console.log(date);
+  date = moment.tz(date, 'America/Los_Angeles');
+  console.log(date);
+  dailyIntro['time'] = date.unix();
   console.log(dailyIntro['time']);
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
 
