@@ -65,14 +65,12 @@ app.post('/', (req, res) => {
        paidInputs['date'].substr(11, 16) + ": $1 question. " + paidPrize
   };
   console.log(dailyIntro['description']);
-  const date = new Date(freeInputs['date']);
-  if(date.getHours() < 7) {
-    date.setDate(date.getDate() - 1);
-  }
-  date.setUTCHours(7);
-  date.setUTCMinutes(0);
-  date.setUTCSeconds(0);
-  date.setUTCMilliseconds(0);
+  let date = new Date(freeInputs['date']);
+  date = date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
   createHttpTask(dailyIntro, date.toISOString());
 
   res.sendStatus(200);
