@@ -2,7 +2,6 @@ require('dotenv').config({path: './forms/.env.forms'});
 const express = require('express');
 const addToCalendar = require('./calendar.js');
 const createHttpTask = require('./tasks.js');
-const moment = require('moment-timezone');
 
 const app = express();
 app.use(express.json()); 
@@ -22,6 +21,7 @@ const paidKeys = {
   prize: 'ifkHgkyZGUojizDYUuUyX6',
   numWinners: 'gCBtpGatA1LdjHEAxeHv43'
 };
+const schedule = 'mnRZqSyfghcnkRBwZPs6FJ';
 
 // if a form is submitted with the correct endpoint
 app.post('/', (req, res) => {
@@ -72,14 +72,7 @@ app.post('/', (req, res) => {
        paidDateString + ": $1 question. " + paidPrize,
     'phase': 'schedule'
   };
-  let date = new Date(freeInputs['date']);
-  date = freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
-  console.log(date);
-  date = date.split(',')[0];
-  console.log(date);
-  date = moment.tz(date, 'America/Los_Angeles');
-  console.log(date);
-  dailyIntro['time'] = date.unix();
+  dailyIntro['time'] = (new Date(inputs[schedule]).getTime() / 1000)
   console.log(dailyIntro['time']);
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
 
