@@ -66,9 +66,9 @@ app.post('/', (req, res) => {
     "Fastest person wins $" + paidInputs['prize'] + "."
     : "Fastest " + paidInputs['numWinners'] + " people win $" + input['prize'] + " each.";
   const dailyIntro = {
-    'description': 'Today\'s schedule:\n\n' +
+    'description': 'Today\'s schedule:\r\r' +
        freeDateString + ": FREE question. Fastest " + freeInputs['numWinners'] +
-       " people to answer correctly get to play the $1 question for free!\n\n" +
+       " people to answer correctly get to play the $1 question for free!\r\r" +
        paidDateString + ": $1 question. " + paidPrize,
     'phase': 'schedule'
   };
