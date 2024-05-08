@@ -1,5 +1,5 @@
 const express = require('express');
-const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners, sendAnswers } = require('./updates.js');
+const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners, sendAnswers, sendSchedule } = require('./updates.js');
 
 const app = express();
 app.use(express.json()); 
@@ -32,9 +32,7 @@ app.post('/', (req, res) => {
     const delay = new Date(event['time']) - new Date() - 60000;
     setTimeout(() => {
       doInBatches((batch) => {
-        batch.forEach(doc => {
-          sendMessage(event['description'], doc.id, 'question');
-        });
+        sendSchedule(event['description'], batch);
       });
     }, delay);
   }

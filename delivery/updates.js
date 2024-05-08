@@ -120,4 +120,10 @@ async function sendAnswers(questions, answers) {
   });
 }
 
-module.exports = { postQnA, removeQnA, doInBatches, sendToBatch, sendToWinners, sendAnswers }
+function sendSchedule(message, batch) {
+  batch.forEach(doc => {
+    sendMessage(message, doc.id, 'question');
+  });
+}
+
+module.exports = { postQnA, removeQnA, doInBatches, sendToBatch, sendToWinners, sendAnswers, sendSchedule }
