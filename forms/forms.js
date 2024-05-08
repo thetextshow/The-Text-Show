@@ -77,7 +77,7 @@ app.post('/', (req, res) => {
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  dailyIntro['time'] = date.toISOString().getTime() / 1000;
+  dailyIntro['time'] = date.getTime() / 1000;
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
 
   res.sendStatus(200);
