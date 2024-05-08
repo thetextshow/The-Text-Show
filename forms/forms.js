@@ -71,13 +71,14 @@ app.post('/', (req, res) => {
        paidDateString + ": $1 question. " + paidPrize,
     'phase': 'schedule'
   };
-  console.log(dailyIntro['description']);
-  let date = freeDate;
+  let date = new Date(freeInputs['date']);
+  date = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
   dailyIntro['time'] = date.getTime() / 1000;
+  console.log(dailyIntro['time']);
   createHttpTask(dailyIntro, dailyIntro['time'] - 120);
 
   res.sendStatus(200);
