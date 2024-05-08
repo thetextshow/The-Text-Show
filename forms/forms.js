@@ -55,23 +55,30 @@ app.post('/', (req, res) => {
   scheduleEvent(freeInputs, 'FREE');
   scheduleEvent(paidInputs, 'PAID');
 
+  let freeDate = new Date(freeInputs['date']);
+  freeDate = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+  const freeDateString = `${freeDate.getHours()}:${freeDate.getMinutes()}`;
+  let paidDate = new Date(paidInputs['date']);
+  paidDate = new Date(paidDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+  const paidDateString = `${paidDate.getHours()}:${paidDate.getMinutes()}`;
   const paidPrize = paidInputs['numWinners'] === 1 ?
     "Fastest person wins $" + paidInputs['prize'] + "."
     : "Fastest " + paidInputs['numWinners'] + " people win $" + input['prize'] + " each.";
   const dailyIntro = {
     'description': 'Today\'s schedule:\n\n' +
-       freeInputs['date'].substr(11, 16) + ": FREE question. Fastest " + freeInputs['numWinners'] +
+       freeDateString + ": FREE question. Fastest " + freeInputs['numWinners'] +
        " people to answer correctly get to play the $1 question for free!\n\n" +
-       paidInputs['date'].substr(11, 16) + ": $1 question. " + paidPrize
+       paidDateString + ": $1 question. " + paidPrize,
+    'phase': 'schedule'
   };
   console.log(dailyIntro['description']);
-  let date = new Date(freeInputs['date']);
-  date = new Date(date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+  let date = freeDate;
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  createHttpTask(dailyIntro, date.toISOString());
+  dailyIntro['time'] = date.toISOString().getTime() / 1000;
+  createHttpTask(dailyIntro, dailyIntro['time'] - 120);
 
   res.sendStatus(200);
 });

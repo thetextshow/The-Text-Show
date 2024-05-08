@@ -28,6 +28,16 @@ app.post('/', (req, res) => {
         sendAnswers(event['input']['question'], event['input']['answers']);
       });
   }
+  else if(event['phase'] === 'schedule') {
+    const delay = new Date(event['time']) - new Date() - 60000;
+    setTimeout(() => {
+      doInBatches((batch) => {
+        batch.forEach(doc => {
+          sendMessage(event['description'], doc.id, 'question');
+        });
+      });
+    }, delay);
+  }
 
   res.sendStatus(200);
 });
