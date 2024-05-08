@@ -66,7 +66,7 @@ app.post('/', (req, res) => {
   };
   console.log(dailyIntro['description']);
   let date = new Date(freeInputs['date']);
-  date = date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+  date = new Date(date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
