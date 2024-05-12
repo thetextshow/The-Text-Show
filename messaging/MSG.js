@@ -15,7 +15,7 @@ const MSG = Object.freeze({
 	HELP: "You typed HELP",
 	STOP: "You have been unsubscribed from The Text Show. Send PLAY to resubscribe.",
 	ALL_CORRECT: "Correct!\n\n" + "You got everything correct! We'll let you know if you won soon.",
-	CORRECT: "Correct! Next Question:\n\n%0%\n\nOnly your FIRST answer will be considered.",
+	CORRECT: "Correct! Next Question:\n\n%0%",
 	WRONG: "WRONG !!! u LOSE",
 	WON: "You actually won."
 });

@@ -58,10 +58,10 @@ app.post('/', (req, res) => {
 
   let freeDate = new Date(freeInputs['date']);
   freeDate = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  const freeDateString = `${freeDate.getHours()}:${freeDate.getMinutes()}`;
+  const freeDateString = `${freeDate.getHours()}:${freeDate.getMinutes().padStart(2, '0')}`;
   let paidDate = new Date(paidInputs['date']);
   paidDate = new Date(paidDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  const paidDateString = `${paidDate.getHours()}:${paidDate.getMinutes()}`;
+  const paidDateString = `${paidDate.getHours()}:${paidDate.getMinutes().padStart(2, '0')}`;
   const paidPrize = paidInputs['numWinners'] === 1 ?
     "Fastest person wins $" + paidInputs['prize'] + "."
     : "Fastest " + paidInputs['numWinners'] + " people win $" + paidInputs['prize'] + " each.";
@@ -87,12 +87,7 @@ app.listen(port, () => {
 
 function buildText(input, type) {
   const questions = input['question'].split('\n');
-
-  // different message if it's 1 winner vs multiple winners
-  let message = input['numWinners'] === 1 ?
-    "Fastest person wins $" + input['prize'] + "."
-    : "Fastest " + input['numWinners'] + " people win $" + input['prize'] + " each.";
-  message += "\r\r" + questions[0] + "\r\r" + "Only your FIRST answer will be considered.";
+  const message = questions[0];
 
   // end time is one hour after start time
   const date = new Date(input['date']);

@@ -25,7 +25,7 @@ app.post('/', (req, res) => {
     removeQnA();
     sendToWinners(event['input']['numWinners'])
       .then(() => {
-        sendAnswers(event['input']['question'], event['input']['answers']);
+        if(questionType === "PAID") sendAnswers(event['input']['question'], event['input']['answers']);
       });
   }
   else if(event['phase'] === 'schedule') {
