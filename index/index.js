@@ -15,7 +15,7 @@ app.get('/health', (req, res) => {
   } else {
     res.sendStatus(400);
   }
-}
+});
 
 // for webhook verification from Meta
 app.get('/', (req, res) => {
