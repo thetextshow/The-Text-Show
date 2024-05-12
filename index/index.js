@@ -8,6 +8,15 @@ app.use(express.json());
 
 const verify_token = process.env.VERIFY_TOKEN;
 
+// for uptime checker
+app.get('/health', (req, res) => {
+  if(req.get('token') === verify_token) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(400);
+  }
+}
+
 // for webhook verification from Meta
 app.get('/', (req, res) => {
   if(req.query['hub.mode'] === 'subscribe' &&
