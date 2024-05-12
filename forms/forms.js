@@ -58,10 +58,10 @@ app.post('/', (req, res) => {
 
   let freeDate = new Date(freeInputs['date']);
   freeDate = new Date(freeDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  const freeDateString = `${freeDate.getHours()}:${freeDate.getMinutes().padStart(2, '0')}`;
+  const freeDateString = `${freeDate.getHours()}:${String(freeDate.getMinutes()).padStart(2, '0')}`;
   let paidDate = new Date(paidInputs['date']);
   paidDate = new Date(paidDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-  const paidDateString = `${paidDate.getHours()}:${paidDate.getMinutes().padStart(2, '0')}`;
+  const paidDateString = `${paidDate.getHours()}:${String(paidDate.getMinutes()).padStart(2, '0')}`;
   const paidPrize = paidInputs['numWinners'] === 1 ?
     "Fastest person wins $" + paidInputs['prize'] + "."
     : "Fastest " + paidInputs['numWinners'] + " people win $" + paidInputs['prize'] + " each.";
