@@ -97,16 +97,18 @@ async function sendToWinners(numWinners) {
   });
 }
 
-async function sendAnswers(questions, answers) {
-  let message = "Thank you everybody for playing The Text Show!" +
-    " Here is an overview of today's answers.";
-  
-  const questionsArray = questions.split('\n');
-  const answersArray = answers.split('\n');
-  for(let i = 0; i < questionsArray.length; i++) {
-    message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i];
+async function sendAnswers(questions, answers, type=questionType) {
+  if(type === "PAID") {
+    let message = "Thank you everybody for playing The Text Show!" +
+      " Here is an overview of today's answers.";
+    
+    const questionsArray = questions.split('\n');
+    const answersArray = answers.split('\n');
+    for(let i = 0; i < questionsArray.length; i++) {
+      message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i];
+    }
+    console.log(message);
   }
-  console.log(message);
 
   doInBatches((batch) => {
     batch.forEach(doc => {
