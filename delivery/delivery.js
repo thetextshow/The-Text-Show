@@ -15,7 +15,9 @@ app.post('/', (req, res) => {
 
     // send the message out 1 minute early bc of Whatsapp delay
     const delay = new Date(event['input']['date']) - new Date() - 60000;
+    console.log("Start Delay:", delay);
     setTimeout(() => {
+      console.log("start delay over");
       doInBatches((batch) => {
         sendToBatch(event['description'], batch);
       });
@@ -29,10 +31,10 @@ app.post('/', (req, res) => {
       });
   }
   else if(event['phase'] === 'schedule') {
-    console.log(event['time']);
     const delay = new Date(event['time']) - new Date() - 60000;
-    console.log(delay);
+    console.log("Sched Delay:", delay);
     setTimeout(() => {
+      console.log("sched delay over");
       doInBatches((batch) => {
         sendSchedule(event['description'], batch);
       });
