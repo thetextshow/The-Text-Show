@@ -29,7 +29,9 @@ app.post('/', (req, res) => {
       });
   }
   else if(event['phase'] === 'schedule') {
+    console.log(event['time']);
     const delay = new Date(event['time']) - new Date() - 60000;
+    console.log(delay);
     setTimeout(() => {
       doInBatches((batch) => {
         sendSchedule(event['description'], batch);

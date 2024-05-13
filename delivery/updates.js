@@ -108,18 +108,27 @@ async function sendAnswers(questions, answers, type=questionType) {
       message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i];
     }
     console.log(message);
-  }
 
-  doInBatches((batch) => {
-    batch.forEach(doc => {
-      sendMessage(message, doc.id, 'question')
-        .then(async () => {
-          await db.collection('users').doc(doc.id).update({
-            live: FieldValue.delete()
+    doInBatches((batch) => {
+      batch.forEach(doc => {
+        sendMessage(message, doc.id, 'question')
+          .then(async () => {
+            await db.collection('users').doc(doc.id).update({
+              live: FieldValue.delete()
+            });
           });
-        });
+      });
     });
-  });
+  }
+  else if(type === "FREE") {
+    doInBatches((batch) => {
+      batch.forEach(async (doc) => {
+        await db.collection('users').doc(doc.id).update({
+          live: FieldValue.delete()
+        });
+      });
+    });
+  }
 }
 
 function sendSchedule(message, batch) {
