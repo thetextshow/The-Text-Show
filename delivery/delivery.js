@@ -1,6 +1,5 @@
 const express = require('express');
 const { postQnA, doInBatches, sendToBatch, removeQnA, sendToWinners, sendAnswers, sendSchedule } = require('./updates.js');
-const { spinUp, spinDown } = require('./spinUp.js');
 
 const app = express();
 app.use(express.json()); 
@@ -12,7 +11,6 @@ app.post('/', (req, res) => {
   console.log(event);
   
   if(event['phase'] === 'start') {
-    spinUp();
     postQnA(event['input']['question'], event['input']['answers']);
 
     // send the message out 1 minute early bc of Whatsapp delay
@@ -24,7 +22,6 @@ app.post('/', (req, res) => {
     }, delay);
   }
   else if(event['phase'] === 'stop') {
-    spinDown();
     removeQnA();
     sendToWinners(event['input']['numWinners'])
       .then(() => {

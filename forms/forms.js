@@ -72,9 +72,9 @@ app.post('/', (req, res) => {
        paidDateString + ": $1 question. " + paidPrize,
     'phase': 'schedule'
   };
-  dailyIntro['time'] = (new Date(inputs[schedule]).getTime() / 1000)
-  console.log(dailyIntro['time']);
-  createHttpTask(dailyIntro, dailyIntro['time'] - 120);
+  dailyIntro['time'] = inputs[schedule];
+  const time = (new Date(dailyIntro['time']).getTime() / 1000);
+  createHttpTask(dailyIntro, time - 120);
 
   res.sendStatus(200);
 });
