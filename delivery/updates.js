@@ -52,10 +52,11 @@ async function doInBatches(todo, batchSize=100) {
     }
 
     query = query.limit(batchSize);
+    console.log(2);
     const snapshot = await query.get();
-
+    console.log(3);
     todo(snapshot);
-
+    console.log(8);
     // Update lastUser for the next iteration
     if (snapshot.size > 0) {
       lastUser = snapshot.docs[snapshot.size - 1];
