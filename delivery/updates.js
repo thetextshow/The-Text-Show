@@ -30,9 +30,13 @@ async function removeQnA(type=questionType) {
 
 // Function to fetch users in batches
 async function doInBatches(todo, batchSize=100) {
+  console.log(1);
   if(process.env.dev) {
+    console.log(2);
     const user = await db.collection('users').doc(process.env.dev).get();
+    console.log(3);
     todo([user]);
+    console.log(8);
     return;
   }
   
@@ -60,6 +64,7 @@ async function doInBatches(todo, batchSize=100) {
 }
 
 async function sendToBatch(message, batch, type=questionType) {
+  console.log(5);
   batch.forEach(doc => {
     sendMessage(message, doc.id, 'question')
       .then(async (wamid) => {
@@ -83,6 +88,7 @@ async function sendToBatch(message, batch, type=questionType) {
         console.log(error);
       });
   });
+  console.log(6);
 }
 
 async function sendToWinners(numWinners) {
@@ -132,9 +138,11 @@ async function sendAnswers(questions, answers, type=questionType) {
 }
 
 function sendSchedule(message, batch) {
+  console.log(5);
   batch.forEach(doc => {
     sendMessage(message, doc.id, 'question');
   });
+  console.log(6);
 }
 
 module.exports = { postQnA, removeQnA, doInBatches, sendToBatch, sendToWinners, sendAnswers, sendSchedule }

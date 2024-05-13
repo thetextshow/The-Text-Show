@@ -19,7 +19,9 @@ app.post('/', (req, res) => {
     setTimeout(() => {
       console.log("start delay over");
       doInBatches((batch) => {
+        console.log(4);
         sendToBatch(event['description'], batch);
+        console.log(7);
       });
     }, delay);
   }
@@ -36,7 +38,9 @@ app.post('/', (req, res) => {
     setTimeout(() => {
       console.log("sched delay over");
       doInBatches((batch) => {
+        console.log(4);
         sendSchedule(event['description'], batch);
+        console.log(7);
       });
     }, delay);
   }
