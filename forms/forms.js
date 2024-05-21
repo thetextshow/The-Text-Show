@@ -25,6 +25,7 @@ const schedule = 'mnRZqSyfghcnkRBwZPs6FJ';
 
 // if a form is submitted with the correct endpoint
 app.post('/', (req, res) => {
+  console.log(req.body);
   try {
     let password = false;
     req.body.fields.forEach((input) => {
