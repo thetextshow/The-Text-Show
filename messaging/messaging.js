@@ -27,7 +27,6 @@ function sendButtons(msg, to, options, header="", footer="") {
       }
     });
   }
-  console.log(buttons);
 
   const data = JSON.stringify({
     "messaging_product": "whatsapp",
@@ -98,14 +97,14 @@ function sendPayload(data, msg, to) {
 	  },
 	  data: data
 	};
-  console.log(config);
+
 	return axios.request(config)
 		.then((response) => {
 		  console.log("Sent", msg, "to", to);
 		  return response.data['messages'][0]['id'];
 		})
 		.catch((error) => {
-		  console.log(error);
+		  console.log(error.response.data);
 		});
 }
 
