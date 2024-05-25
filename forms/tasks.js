@@ -9,7 +9,7 @@ async function createHttpTask(event, seconds) {
   const project = 'the-text-show';
   const queue = 'tts-send-trigger';
   const location = 'us-central1';
-  const url = process.env.URL;
+  const url = process.env.DELIVERY_URL;
   const payload = event;
 
   // Construct the fully qualified queue name.

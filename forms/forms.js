@@ -25,11 +25,10 @@ const schedule = 'mnRZqSyfghcnkRBwZPs6FJ';
 
 // if a form is submitted with the correct endpoint
 app.post('/', (req, res) => {
-  console.log(req.body);
   try {
     let password = false;
-    req.body.fields.forEach((input) => {
-      if(input.label === "Password" && input.value === process.env.FORM_PASS) {
+    req.body.submission.questions.forEach((input) => {
+      if(input.name === "Password" && input.value === process.env.FORM_PASS) {
         password = true;
       }
 
@@ -81,9 +80,9 @@ app.post('/', (req, res) => {
 });
 
 // starting the server
-const port = parseInt(process.env.PORT) || 8080;
+const port = parseInt(process.env.PORT) || 8000;
 app.listen(port, () => {
-  console.log('Forms Server Started!\n');
+  console.log('Forms Server Started!');
 });
 
 function buildText(input, type) {

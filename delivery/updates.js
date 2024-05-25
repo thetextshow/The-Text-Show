@@ -6,16 +6,31 @@ const { MSG } = require('../messaging/MSG.js');
 initializeApp();
 const db = getFirestore();
 
-async function postQnA(question, answer, type=questionType) {
+async function postQnA(question, answers, type=questionType) {
   const questionsArray = question.split('\n');
   await db.collection('QnA').doc('questions').update({
     [`${type}`]: questionsArray
   });
 
-  const answersArray = answer.split('\n');
+  //const answersArray = answers.split('\n');
+  // await db.collection('QnA').doc('answers').update({
+	// 	[`${type}`]: answersArray
+	// });
+
+  const options = answers.split('\n');
+  const optionsArray = [];
+  const answersArray = [];
+  options.forEach((line) => {
+    answers = line.split(', ');
+    answersArray.push(answers[0]);
+    optionsArray.push({answers});
+  });
   await db.collection('QnA').doc('answers').update({
-		[`${type}`]: answersArray
-	});
+    [`${type}`]: answersArray
+  });
+  await db.collection('QnA').doc('options').update({
+    [`${type}`]: optionsArray
+  });
 }
 
 async function removeQnA(type=questionType) {
@@ -26,14 +41,18 @@ async function removeQnA(type=questionType) {
   await db.collection('QnA').doc('answers').update({
     [`${type}`]: FieldValue.delete()
   });
+
+  await db.collection('QnA').doc('options').update({
+    [`${type}`]: FieldValue.delete()
+  });
 }
 
 // Function to fetch users in batches
 async function doInBatches(todo, batchSize=100) {
   console.log(1);
-  if(process.env.dev) {
+  if(process.env.DEV) {
     console.log(2);
-    const user = await db.collection('users').doc(process.env.dev).get();
+    const user = await db.collection('users').doc(process.env.DEV).get();
     console.log(3);
     todo([user]);
     console.log(8);
@@ -112,7 +131,7 @@ async function sendAnswers(questions, answers, type=questionType) {
     const questionsArray = questions.split('\n');
     const answersArray = answers.split('\n');
     for(let i = 0; i < questionsArray.length; i++) {
-      message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i];
+      message += "\r\rQ: " + questionsArray[i] + "\rA: " + answersArray[i].split(', ')[0];
     }
     console.log(message);
 

@@ -11,6 +11,50 @@ function setDefaultNumber(number) {
 	phoneNumber = number;
 }
 
+function sendButtons(msg, to, options, header="", footer="") {
+  options['answers']
+  const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1)[0];
+  const arrLength = options['answers'].length;
+  let buttons = [];
+  for(let i = 0; i < arrLength; i++) {
+    const name = randomItem(options['answers']);
+    console.log(name);
+    buttons.push({
+      "type": "reply",
+      "reply": {
+        "id": name,
+        "title": name
+      }
+    });
+  }
+  console.log(buttons);
+
+  const data = JSON.stringify({
+    "messaging_product": "whatsapp",
+    "recipient_type": "individual",
+    "to": to,
+    "type": "interactive",
+    "interactive": {
+      "type": "button",
+      "header": {
+        "type": "text",
+        "text": header
+      },
+      "body": {
+        "text": msg
+      },
+      "footer": {
+        "text": footer
+      },
+      "action": {
+        "buttons": buttons
+      }
+    }
+  });
+
+  return sendPayload(data, msg, to);
+}
+
 function sendMessage(msg, to=phoneNumber, template='none') {
 	const data = template === 'none' ? 
 		JSON.stringify({
@@ -40,10 +84,14 @@ function sendMessage(msg, to=phoneNumber, template='none') {
 	    }
 		});
 
+	return sendPayload(data, msg, to);
+}
+
+function sendPayload(data, msg, to) {
 	const config = {
 	  method: 'post',
 	  maxBodyLength: Infinity,
-	  url: 'https://graph.facebook.com/v18.0/296755176855080/messages',
+	  url: process.env.WHATSAPP_URL,
 	  headers: { 
 	    'Content-Type': 'application/json', 
 	    'Authorization': 'Bearer ' + auth_token
@@ -61,4 +109,4 @@ function sendMessage(msg, to=phoneNumber, template='none') {
 		});
 }
 
-module.exports = { setDefaultNumber, sendMessage };
+module.exports = { setDefaultNumber, sendMessage, sendButtons };

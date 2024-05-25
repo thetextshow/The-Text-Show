@@ -55,6 +55,13 @@ app.post('/', (req, res) => {
     res.sendStatus(200);
     return;
   }
+  else if(message && message['type'] === 'interactive') {
+    if(message['interactive']['type'] === 'button_reply') {
+      checkKeyword(message['interactive']['button_reply']['title'], message['timestamp'], number);
+      res.sendStatus(200);
+      return;
+    }
+  }
 
   // process statuses
   const status = req.body['entry'][0]['changes'][0]['value']['statuses']?.[0];
@@ -67,7 +74,7 @@ app.post('/', (req, res) => {
 });
 
 // starting the server
-const port = parseInt(process.env.PORT) || 8080;
+const port = parseInt(process.env.PORT) || 7000;
 app.listen(port, () => {
   console.log('Whatsapp Webhook Server Started!');
 });
