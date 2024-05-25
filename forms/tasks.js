@@ -3,7 +3,7 @@ require('dotenv').config({path: './forms/.env.forms'});
 const {CloudTasksClient} = require('@google-cloud/tasks');
 
 // Instantiates a client.
-const client = new CloudTasksClient();
+const client = new CloudTasksClient({ fallback: true });
 
 async function createHttpTask(event, seconds) {
   const project = 'the-text-show';
