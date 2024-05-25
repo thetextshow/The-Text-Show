@@ -1,4 +1,3 @@
-require('dotenv').config();
 const crypto = require('crypto');
 const express = require('express');
 const { checkKeyword, addTimestamp } = require('./keywords.js');

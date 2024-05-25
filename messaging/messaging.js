@@ -3,7 +3,6 @@
  **/
 
 const axios = require('axios');
-require('dotenv').config();
 const auth_token = process.env.AUTH_TOKEN;
 
 let phoneNumber;
@@ -12,13 +11,11 @@ function setDefaultNumber(number) {
 }
 
 function sendButtons(msg, to, options, header="", footer="") {
-  options['answers']
   const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1)[0];
   const arrLength = options['answers'].length;
   let buttons = [];
   for(let i = 0; i < arrLength; i++) {
     const name = randomItem(options['answers']);
-    console.log(name);
     buttons.push({
       "type": "reply",
       "reply": {

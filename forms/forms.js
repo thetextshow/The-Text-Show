@@ -1,4 +1,3 @@
-require('dotenv').config({path: './forms/.env.forms'});
 const express = require('express');
 const addToCalendar = require('./calendar.js');
 const createHttpTask = require('./tasks.js');

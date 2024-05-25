@@ -12,11 +12,6 @@ async function postQnA(question, answers, type=questionType) {
     [`${type}`]: questionsArray
   });
 
-  //const answersArray = answers.split('\n');
-  // await db.collection('QnA').doc('answers').update({
-	// 	[`${type}`]: answersArray
-	// });
-
   const options = answers.split('\n');
   const optionsArray = [];
   const answersArray = [];

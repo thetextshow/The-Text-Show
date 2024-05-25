@@ -1,4 +1,3 @@
-require('dotenv').config({path: './forms/.env.forms'});
 // Imports the Google Cloud Tasks library.
 const {CloudTasksClient} = require('@google-cloud/tasks');
 
