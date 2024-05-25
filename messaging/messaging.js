@@ -105,7 +105,7 @@ function sendPayload(data, msg, to) {
 		  return response.data['messages'][0]['id'];
 		})
 		.catch((error) => {
-		  console.log(error.response.data);
+		  console.log(error);
 		});
 }
 
