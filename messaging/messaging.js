@@ -98,7 +98,7 @@ function sendPayload(data, msg, to) {
 	  },
 	  data: data
 	};
-
+  console.log(config);
 	return axios.request(config)
 		.then((response) => {
 		  console.log("Sent", msg, "to", to);
