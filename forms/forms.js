@@ -74,7 +74,7 @@ app.post('/', (req, res) => {
   };
   dailyIntro['time'] = inputs[schedule];
   const time = (new Date(dailyIntro['time']).getTime() / 1000);
-  createHttpTask(dailyIntro, time - 120);
+  await createHttpTask(dailyIntro, time - 120);
 
   res.sendStatus(200);
 });
@@ -118,11 +118,11 @@ function scheduleEvent(input, type) {
   event['input'] = input;
   event['type'] = type;
   event['phase'] = 'start';
-  createHttpTask(event, startTime);
+  await createHttpTask(event, startTime);
 
   const stopTime = (new Date(input['date']).getTime() / 1000) + 3600;
   event['phase'] = 'stop';
-  createHttpTask(event, stopTime);
+  await createHttpTask(event, stopTime);
 }
 
 
