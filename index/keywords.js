@@ -4,7 +4,7 @@
 
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const { setDefaultNumber, sendMessage, sendButtons } = require('../messaging/messaging.js');
+const { sendMessage, sendButtons } = require('../messaging/messaging.js');
 const { MSG, format } = require('../messaging/MSG.js');
 
 initializeApp();

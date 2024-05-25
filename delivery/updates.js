@@ -1,6 +1,6 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const { sendMessage } = require('../messaging/messaging.js');
+const { sendMessage, sendTemplate } = require('../messaging/messaging.js');
 const { MSG } = require('../messaging/MSG.js');
 
 initializeApp();
@@ -81,7 +81,7 @@ async function doInBatches(todo, batchSize=100) {
 async function sendToBatch(message, batch, type=questionType) {
   console.log(5);
   batch.forEach(doc => {
-    sendMessage(message, doc.id, 'question')
+    sendTemplate(message, doc.id, 'question')
       .then(async (wamid) => {
         wamid = wamid.split('.')[1]
         await db.collection('users').doc(doc.id).update({
@@ -132,7 +132,7 @@ async function sendAnswers(questions, answers, type=questionType) {
 
     doInBatches((batch) => {
       batch.forEach(doc => {
-        sendMessage(message, doc.id, 'question')
+        sendTemplate(message, doc.id, 'question')
           .then(async () => {
             await db.collection('users').doc(doc.id).update({
               live: FieldValue.delete()
@@ -155,7 +155,7 @@ async function sendAnswers(questions, answers, type=questionType) {
 function sendSchedule(message, batch) {
   console.log(5);
   batch.forEach(doc => {
-    sendMessage(message, doc.id, 'question');
+    sendTemplate(message, doc.id, 'question');
   });
   console.log(6);
 }

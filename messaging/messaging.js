@@ -5,11 +5,6 @@
 const axios = require('axios');
 const auth_token = process.env.AUTH_TOKEN;
 
-let phoneNumber;
-function setDefaultNumber(number) {
-	phoneNumber = number;
-}
-
 function sendButtons(msg, to, options, header="", footer="") {
   const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1)[0];
   const arrLength = options['answers'].length;
@@ -51,36 +46,40 @@ function sendButtons(msg, to, options, header="", footer="") {
   return sendPayload(data, msg, to);
 }
 
-function sendMessage(msg, to=phoneNumber, template='none') {
-	const data = template === 'none' ? 
-		JSON.stringify({
-		  "messaging_product": "whatsapp",
-		  "to": to,
-		  "type": "text",
-	    "text": {
-	    	"body": msg
-	    }
-		}) : 
-		JSON.stringify({
-		  "messaging_product": "whatsapp",
-		  "to": to,
-		  "type": "template",
-	    "template": {
-	    	"name": template,
-	    	"language": {
-	    		"code": "en_us"
-	    	},
-	    	"components": [{
-	    			"type": "body",
-	    			"parameters": [{
-	    					"type": "text",
-	    					"text": msg
-	    			}]
-	    	}] 
-	    }
-		});
+function sendMessage(msg, to) {
+	const data = JSON.stringify({
+	  "messaging_product": "whatsapp",
+	  "to": to,
+	  "type": "text",
+    "text": {
+    	"body": msg
+    }
+	});
 
 	return sendPayload(data, msg, to);
+}
+
+function sendTemplate(msg, to, template) {
+  const data = JSON.stringify({
+    "messaging_product": "whatsapp",
+    "to": to,
+    "type": "template",
+    "template": {
+      "name": template,
+      "language": {
+        "code": "en_us"
+      },
+      "components": [{
+          "type": "body",
+          "parameters": [{
+              "type": "text",
+              "text": msg
+          }]
+      }] 
+    }
+  });
+
+  return sendPayload(data, msg, to);
 }
 
 function sendPayload(data, msg, to) {
@@ -105,4 +104,4 @@ function sendPayload(data, msg, to) {
 		});
 }
 
-module.exports = { setDefaultNumber, sendMessage, sendButtons };
+module.exports = { sendMessage, sendButtons, sendTemplate };
