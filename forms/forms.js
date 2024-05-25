@@ -24,7 +24,7 @@ const paidKeys = {
 const schedule = 'mnRZqSyfghcnkRBwZPs6FJ';
 
 // if a form is submitted with the correct endpoint
-app.post('/', (req, res) => {
+app.post('/', async (req, res) => {
   try {
     let password = false;
     req.body.submission.questions.forEach((input) => {
@@ -106,7 +106,7 @@ function buildText(input, type) {
   };
 }
 
-function scheduleEvent(input, type) {
+async function scheduleEvent(input, type) {
   if(input['date'] === "") return;
 
   const event = buildText(input, type);
