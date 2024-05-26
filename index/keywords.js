@@ -9,7 +9,7 @@ const { MSG, format } = require('../messaging/MSG.js');
 
 initializeApp();
 
-const db = getFirestore();
+const db = getFirestore(process.env.DATABASE);
 const keywords = {PLAY: "PLAY", HELP: "HELP", STOP: "STOP"};
 
 async function checkKeyword(word, timestamp, number) {
@@ -116,20 +116,24 @@ async function handleAnswer(type, user, word, timestamp, number) {
         [`live.history.${oldWamid}.replyTime`]: timestamp
     });
     const time = timestamp - user.data()['live']['history'][oldWamid]['msgTime'];
+    await db.collection('users').doc(number).update({
+        ['live.answerTime']: FieldValue.increment(time)
+    });
     
     const convoCount = user.data()['live']['convoCount'];
     if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
-        await db.collection('users').doc(number).update({
-            ['live.answerTime']: FieldValue.increment(time)
-        });
-
         if(convoCount === answers.length - 1) {
             // WIN
-            sendMessage(MSG.ALL_CORRECT, number);
+            if(user.data()['live']['allCorrect']) {
+                sendMessage(MSG.ALL_CORRECT, number);
+            }
+            else {
+                sendMessage(MSG.LOST, number);
+            }
 
-            await db.collection('users').doc(number).update({
-                ['live.allCorrect']: true
-            });
+            // await db.collection('users').doc(number).update({
+            //     ['live.allCorrect']: true
+            // });
         }
         else {
             const msg = format(MSG.CORRECT, questions[convoCount+1]);
@@ -149,7 +153,21 @@ async function handleAnswer(type, user, word, timestamp, number) {
         }
     }
     else {
-        sendMessage(MSG.WRONG, number);
+        const msg = format(MSG.WRONG, questions[convoCount+1]);
+            sendButtons(msg, number, options[convoCount+1])
+                .then(async (wamid) => {
+                    wamid = wamid.split('.')[1]
+                    await db.collection('users').doc(number).update({
+                        ['live.convoCount']: convoCount+1,
+                        [`live.history.${wamid}.msg`]: msg,
+                        [`live.wamid`]: wamid,
+                        ['live.acceptAnswer']: true,
+                        ['live.allCorrect']: false
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
     }
 }
 
@@ -160,7 +178,7 @@ async function addTimestamp(wamid, timestamp, number) {
     const live = await whatIsLive(user);
     if(live === "NONE") return;
 
-  wamid = wamid.split('.')[1];
+    wamid = wamid.split('.')[1];
     // the first message, which is sent via template
     if(user.data()['live']?.['wamid'] === wamid) {
         await db.collection('users').doc(number).update({

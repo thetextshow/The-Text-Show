@@ -109,7 +109,8 @@ async function scheduleEvent(input, type) {
   if(input['date'] === "") return;
 
   const event = buildText(input, type);
-  addToCalendar(event);
+  try { await addToCalendar(event); }
+  catch (e) { console.log(e); }
 
   // start the task 2 minutes before the message goes out
   const startTime = (new Date(input['date']).getTime() / 1000) - 120;

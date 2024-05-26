@@ -4,7 +4,7 @@ const { sendMessage, sendTemplate } = require('../messaging/messaging.js');
 const { MSG } = require('../messaging/MSG.js');
 
 initializeApp();
-const db = getFirestore();
+const db = getFirestore(process.env.DATABASE);
 
 async function postQnA(question, answers, type=questionType) {
   const questionsArray = question.split('\n');
@@ -91,6 +91,7 @@ async function sendToBatch(message, batch, type=questionType) {
             convoCount: 0,
             answerTime: 0,
             acceptAnswer: false,
+            allCorrect: true,
             history: {
               [`${wamid}`]: {
                 msg: message
