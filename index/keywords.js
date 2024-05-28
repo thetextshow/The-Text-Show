@@ -4,7 +4,7 @@
 
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
-const { sendMessage, sendButtons } = require('../messaging/messaging.js');
+const { sendMessage, sendButtons, sendList } = require('../messaging/messaging.js');
 const { MSG, format } = require('../messaging/MSG.js');
 
 initializeApp();
@@ -72,7 +72,31 @@ async function play(userExists=true, number) {
 }
 
 function help(number) {
-    sendMessage(MSG.HELP, number);
+    const options = 
+        {
+            "button": "All Actions",
+            "sections": [{
+                "title": "Keywords",
+                "rows": [
+                    {
+                        "title": "PLAY",
+                        "id": "PLAY",
+                        "description": "This does nothing for now"
+                    },
+                    {
+                        "title": "HELP",
+                        "id": "HELP",
+                        "description": "Show me a list of keywords"
+                    },
+                    {
+                        "title": "STOP",
+                        "id": "STOP",
+                        "description": "Stop sending me messages and delete my data at the end of the month"
+                    }
+                ]
+            }]
+        };
+    sendList(MSG.HELP, number, options);
 }
 
 // move the user to a different collection

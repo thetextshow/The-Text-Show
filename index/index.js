@@ -60,6 +60,11 @@ app.post('/', (req, res) => {
       res.sendStatus(200);
       return;
     }
+    else if(message['interactive']['type'] === 'list_reply') {
+      checkKeyword(message['interactive']['list_reply']['title'], message['timestamp'], number);
+      res.sendStatus(200);
+      return;
+    }
   }
 
   // process statuses
