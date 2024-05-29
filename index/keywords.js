@@ -120,61 +120,102 @@ async function handleAnswer(type, user, word, timestamp, number) {
         ['live.answerTime']: FieldValue.increment(time)
     });
     
+    const correctAnswer = answers[convoCount].toLowerCase() === word.toLowerCase();
     const convoCount = user.data()['live']['convoCount'];
-    if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
-        if(convoCount === answers.length - 1) {
-            // WIN
-            if(user.data()['live']['allCorrect']) {
-                sendMessage(MSG.ALL_CORRECT, number);
-            }
-            else {
-                sendMessage(MSG.LOST, number);
-            }
-
-            // await db.collection('users').doc(number).update({
-            //     ['live.allCorrect']: true
-            // });
+    if(convoCount === answers.length - 1) {
+        if(user.data()['live']['allCorrect'] && correctAnswer) {
+            sendMessage(MSG.ALL_CORRECT, number);
         }
         else {
-            const msg = format(MSG.CORRECT, questions[convoCount+1]);
-            const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
-            const minutesLeft = Math.floor(timeLeft / 60000);
-            const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
-            sendButtons(msg, number, options[convoCount+1], "", footer)
-                .then(async (wamid) => {
-                    wamid = wamid.split('.')[1]
-                    await db.collection('users').doc(number).update({
-                        ['live.convoCount']: convoCount+1,
-                        [`live.history.${wamid}.msg`]: msg,
-                        [`live.wamid`]: wamid,
-                        ['live.acceptAnswer']: true
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            sendMessage(MSG.LOST, number);
         }
     }
     else {
-        const msg = format(MSG.WRONG, questions[convoCount+1]);
+        let msg;
+        let updatePayload;
+        if(correctAnswer) {
+            msg = format(MSG.CORRECT, questions[convoCount+1]);
+            updatePayload = {
+                ['live.convoCount']: convoCount+1,
+                [`live.history.${wamid}.msg`]: msg,
+                [`live.wamid`]: wamid,
+                ['live.acceptAnswer']: true
+            };
+        }
+        else {
+            msg = format(MSG.WRONG, questions[convoCount+1]);
+            updatePayload = {
+                ['live.convoCount']: convoCount+1,
+                [`live.history.${wamid}.msg`]: msg,
+                [`live.wamid`]: wamid,
+                ['live.acceptAnswer']: true,
+                ['live.allCorrect']: false
+            };
+        }
+
         const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
         const minutesLeft = Math.floor(timeLeft / 60000);
         const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
         sendButtons(msg, number, options[convoCount+1], "", footer)
             .then(async (wamid) => {
                 wamid = wamid.split('.')[1]
-                await db.collection('users').doc(number).update({
-                    ['live.convoCount']: convoCount+1,
-                    [`live.history.${wamid}.msg`]: msg,
-                    [`live.wamid`]: wamid,
-                    ['live.acceptAnswer']: true,
-                    ['live.allCorrect']: false
-                });
+                await db.collection('users').doc(number).update(updatePayload);
             })
             .catch((error) => {
                 console.log(error);
             });
     }
+
+    // if(answers[convoCount].toLowerCase() === word.toLowerCase()) {
+    //     if(convoCount === answers.length - 1) {
+    //         // WIN
+    //         if(user.data()['live']['allCorrect']) {
+    //             sendMessage(MSG.ALL_CORRECT, number);
+    //         }
+    //         else {
+    //             sendMessage(MSG.LOST, number);
+    //         }
+    //     }
+    //     else {
+    //         const msg = format(MSG.CORRECT, questions[convoCount+1]);
+    //         const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
+    //         const minutesLeft = Math.floor(timeLeft / 60000);
+    //         const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
+    //         sendButtons(msg, number, options[convoCount+1], "", footer)
+    //             .then(async (wamid) => {
+    //                 wamid = wamid.split('.')[1]
+    //                 await db.collection('users').doc(number).update({
+    //                     ['live.convoCount']: convoCount+1,
+    //                     [`live.history.${wamid}.msg`]: msg,
+    //                     [`live.wamid`]: wamid,
+    //                     ['live.acceptAnswer']: true
+    //                 });
+    //             })
+    //             .catch((error) => {
+    //                 console.log(error);
+    //             });
+    //     }
+    // }
+    // else {
+    //     const msg = format(MSG.WRONG, questions[convoCount+1]);
+    //     const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
+    //     const minutesLeft = Math.floor(timeLeft / 60000);
+    //     const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
+    //     sendButtons(msg, number, options[convoCount+1], "", footer)
+    //         .then(async (wamid) => {
+    //             wamid = wamid.split('.')[1]
+    //             await db.collection('users').doc(number).update({
+    //                 ['live.convoCount']: convoCount+1,
+    //                 [`live.history.${wamid}.msg`]: msg,
+    //                 [`live.wamid`]: wamid,
+    //                 ['live.acceptAnswer']: true,
+    //                 ['live.allCorrect']: false
+    //             });
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // }
 }
 
 // records the actual time the player was sent the question
