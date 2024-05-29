@@ -120,8 +120,8 @@ async function handleAnswer(type, user, word, timestamp, number) {
         ['live.answerTime']: FieldValue.increment(time)
     });
     
-    const correctAnswer = answers[convoCount].toLowerCase() === word.toLowerCase();
     const convoCount = user.data()['live']['convoCount'];
+    const correctAnswer = answers[convoCount].toLowerCase() === word.toLowerCase();
     if(convoCount === answers.length - 1) {
         if(user.data()['live']['allCorrect'] && correctAnswer) {
             sendMessage(MSG.ALL_CORRECT, number);
@@ -135,21 +135,25 @@ async function handleAnswer(type, user, word, timestamp, number) {
         let updatePayload;
         if(correctAnswer) {
             msg = format(MSG.CORRECT, questions[convoCount+1]);
-            updatePayload = {
-                ['live.convoCount']: convoCount+1,
-                [`live.history.${wamid}.msg`]: msg,
-                [`live.wamid`]: wamid,
-                ['live.acceptAnswer']: true
+            updatePayload = (wamid) => {
+                return {
+                    ['live.convoCount']: convoCount+1,
+                    [`live.history.${wamid}.msg`]: msg,
+                    [`live.wamid`]: wamid,
+                    ['live.acceptAnswer']: true
+                }
             };
         }
         else {
             msg = format(MSG.WRONG, questions[convoCount+1]);
-            updatePayload = {
-                ['live.convoCount']: convoCount+1,
-                [`live.history.${wamid}.msg`]: msg,
-                [`live.wamid`]: wamid,
-                ['live.acceptAnswer']: true,
-                ['live.allCorrect']: false
+            updatePayload = (wamid) => {
+                return {
+                    ['live.convoCount']: convoCount+1,
+                    [`live.history.${wamid}.msg`]: msg,
+                    [`live.wamid`]: wamid,
+                    ['live.acceptAnswer']: true,
+                    ['live.allCorrect']: false
+                }
             };
         }
 
@@ -158,8 +162,8 @@ async function handleAnswer(type, user, word, timestamp, number) {
         const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
         sendButtons(msg, number, options[convoCount+1], "", footer)
             .then(async (wamid) => {
-                wamid = wamid.split('.')[1]
-                await db.collection('users').doc(number).update(updatePayload);
+                wamid = wamid.split('.')[1];
+                await db.collection('users').doc(number).update(updatePayload(wamid));
             })
             .catch((error) => {
                 console.log(error);
