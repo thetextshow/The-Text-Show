@@ -126,8 +126,14 @@ async function handleAnswer(type, user, word, timestamp, number) {
         if(user.data()['live']['allCorrect'] && correctAnswer) {
             sendMessage(MSG.ALL_CORRECT, number);
         }
+        else if(!correctAnswer){
+            sendMessage(MSG.LOST_INCORRECT, number);
+            await db.collection('users').doc(number).update({
+                ['live.allCorrect']: false
+            });
+        }
         else {
-            sendMessage(MSG.LOST, number);
+            sendMessage(MSG.LOST_CORRECT, number);
         }
     }
     else {
