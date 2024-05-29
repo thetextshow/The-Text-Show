@@ -45,7 +45,7 @@ async function checkKeyword(word, timestamp, number) {
             break;
         default:
             const live = await whatIsLive(user, number);
-            if(live === "NONE") sendMessage(format(MSG.NOT_KEY, word), number);
+            if(live === "NONE") sendList(format(MSG.NOT_KEY, word), number, MSG.HELP_OPTIONS);
             else await handleAnswer(live, user, word, timestamp, number);
     }
 }
@@ -58,7 +58,7 @@ async function play(userExists=true, number) {
         const oldUser = await db.collection('oldUsers').doc(number).get();
         if(oldUser.exists) {
           await db.collection('users').doc(number).set(oldUser.data());
-        await db.collection('oldUsers').doc(number).delete();
+          await db.collection('oldUsers').doc(number).delete();
         }
         else {
             await db.collection('users').doc(number).set({
@@ -72,31 +72,7 @@ async function play(userExists=true, number) {
 }
 
 function help(number) {
-    const options = 
-        {
-            "button": "All Actions",
-            "sections": [{
-                "title": "Keywords",
-                "rows": [
-                    {
-                        "title": "PLAY",
-                        "id": "PLAY",
-                        "description": "This does nothing for now"
-                    },
-                    {
-                        "title": "HELP",
-                        "id": "HELP",
-                        "description": "Show me a list of keywords"
-                    },
-                    {
-                        "title": "STOP",
-                        "id": "STOP",
-                        "description": "Stop sending me messages and delete my data at the end of the month"
-                    }
-                ]
-            }]
-        };
-    sendList(MSG.HELP, number, options);
+    sendList(MSG.HELP, number, MSG.HELP_OPTIONS);
 }
 
 // move the user to a different collection
@@ -161,7 +137,8 @@ async function handleAnswer(type, user, word, timestamp, number) {
         }
         else {
             const msg = format(MSG.CORRECT, questions[convoCount+1]);
-            sendButtons(msg, number, options[convoCount+1])
+            const footer = format(MSG.FOOTER, convoCount+1, answers.length);
+            sendButtons(msg, number, options[convoCount+1], "", footer)
                 .then(async (wamid) => {
                     wamid = wamid.split('.')[1]
                     await db.collection('users').doc(number).update({
@@ -178,20 +155,21 @@ async function handleAnswer(type, user, word, timestamp, number) {
     }
     else {
         const msg = format(MSG.WRONG, questions[convoCount+1]);
-            sendButtons(msg, number, options[convoCount+1])
-                .then(async (wamid) => {
-                    wamid = wamid.split('.')[1]
-                    await db.collection('users').doc(number).update({
-                        ['live.convoCount']: convoCount+1,
-                        [`live.history.${wamid}.msg`]: msg,
-                        [`live.wamid`]: wamid,
-                        ['live.acceptAnswer']: true,
-                        ['live.allCorrect']: false
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
+        const footer = format(MSG.FOOTER, convoCount+1, answers.length);
+        sendButtons(msg, number, options[convoCount+1], "", footer)
+            .then(async (wamid) => {
+                wamid = wamid.split('.')[1]
+                await db.collection('users').doc(number).update({
+                    ['live.convoCount']: convoCount+1,
+                    [`live.history.${wamid}.msg`]: msg,
+                    [`live.wamid`]: wamid,
+                    ['live.acceptAnswer']: true,
+                    ['live.allCorrect']: false
                 });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 }
 
