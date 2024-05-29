@@ -19,7 +19,7 @@ const MSG = Object.freeze({
 	CORRECT: "Correct! Next Question:\n\n%0%",
 	WRONG: "Wrong... 😞\n" + "u can keep playing just for fun 🙂\n\n%0%",
 	WON: "You actually won.",
-	FOOTER: "Question #: %0% out of %1%",
+	FOOTER: "Question #: %0% out of %1%\n" + "Time left: %2% minutes",
 	HELP_OPTIONS: {
     "button": "All Actions",
     "sections": [{

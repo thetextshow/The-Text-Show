@@ -45,6 +45,12 @@ app.post('/', (req, res) => {
     return;
   }
 
+  // make sure it's the right phone number
+  if(req.body['entry'][0]['changes'][0]['value']['metadata']['display_phone_number'] !== process.env.DISPLAY_NUMBER) {
+    res.sendStatus(400);
+    return;
+  }
+
   // process messages
   const message = req.body['entry'][0]['changes'][0]['value']['messages']?.[0];
   let number = message?.['from'];

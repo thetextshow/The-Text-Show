@@ -78,10 +78,10 @@ async function doInBatches(todo, batchSize=100) {
   }
 }
 
-async function sendToBatch(message, batch, type=questionType) {
+async function sendToBatch(event, batch, type=questionType) {
   console.log(5);
   batch.forEach(doc => {
-    sendTemplate(message, doc.id, 'question')
+    sendTemplate(event['description'], doc.id, 'question')
       .then(async (wamid) => {
         wamid = wamid.split('.')[1]
         await db.collection('users').doc(doc.id).update({
@@ -90,11 +90,12 @@ async function sendToBatch(message, batch, type=questionType) {
             wamid: wamid,
             convoCount: 0,
             answerTime: 0,
+            endTime: event['end']['dateTime'],
             acceptAnswer: false,
             allCorrect: true,
             history: {
               [`${wamid}`]: {
-                msg: message
+                msg: event['description']
               }
             }
           }

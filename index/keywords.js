@@ -137,7 +137,9 @@ async function handleAnswer(type, user, word, timestamp, number) {
         }
         else {
             const msg = format(MSG.CORRECT, questions[convoCount+1]);
-            const footer = format(MSG.FOOTER, convoCount+1, answers.length);
+            const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
+            const minutesLeft = Math.floor(timeLeft / 60000);
+            const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
             sendButtons(msg, number, options[convoCount+1], "", footer)
                 .then(async (wamid) => {
                     wamid = wamid.split('.')[1]
@@ -155,7 +157,9 @@ async function handleAnswer(type, user, word, timestamp, number) {
     }
     else {
         const msg = format(MSG.WRONG, questions[convoCount+1]);
-        const footer = format(MSG.FOOTER, convoCount+1, answers.length);
+        const timeLeft = new Date(user.data()['live']['endTime']) - new Date();
+        const minutesLeft = Math.floor(timeLeft / 60000);
+        const footer = format(MSG.FOOTER, convoCount+2, answers.length, minutesLeft);
         sendButtons(msg, number, options[convoCount+1], "", footer)
             .then(async (wamid) => {
                 wamid = wamid.split('.')[1]

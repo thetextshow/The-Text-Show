@@ -20,7 +20,7 @@ app.post('/', (req, res) => {
       console.log("start delay over");
       doInBatches((batch) => {
         console.log(4);
-        sendToBatch(event['description'], batch);
+        sendToBatch(event, batch);
         console.log(7);
       });
     }, delay);
