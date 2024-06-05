@@ -95,7 +95,6 @@ async function inspo(number) {
         var randomNumber = Math.floor(Math.random() * 468317) + 1; 
         if (!numbers.includes(randomNumber)) {
             const jep = await db.collection('inspo').doc(randomNumber.toString()).get();
-            console.log(randomNumber, jep.data());
             finalStr += (numbers.length + 1).toString() + ': ' + jep.data()['string'] + '\n\n';
             numbers.push(randomNumber);
         }
