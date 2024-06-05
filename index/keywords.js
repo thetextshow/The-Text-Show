@@ -43,6 +43,11 @@ async function checkKeyword(word, timestamp, number) {
         case 'STOP':
             await stop(user, number);
             break;
+        case '!INSPO!':
+            if(number === '17146060669' && !process.env.DATABASE) {
+                await inspo(number);
+                break;
+            }
         default:
             const live = await whatIsLive(user, number);
             if(live === "NONE") sendList(format(MSG.NOT_KEY, word), number, MSG.HELP_OPTIONS);
@@ -81,6 +86,21 @@ async function stop(user, number) {
     await db.collection('oldUsers').doc(number).set(oldUser);
     await db.collection('users').doc(number).delete();
     sendMessage(MSG.STOP, number);
+}
+
+async function inspo(number) {
+    var numbers = [];
+    var finalStr = "";
+    while (numbers.length < 20) {
+        var randomNumber = Math.floor(Math.random() * 468317) + 1; 
+        if (!numbers.includes(randomNumber)) {
+            const jep = await db.collection('inspo').doc(randomNumber.toString()).get();
+            console.log(randomNumber, jep.data());
+            finalStr += (numbers.length + 1).toString() + ': ' + jep.data()['string'] + '\n\n';
+            numbers.push(randomNumber);
+        }
+    }
+    sendMessage(finalStr, number);
 }
 
 // returns "FREE", "PAID", or "NONE" based on which
@@ -125,6 +145,10 @@ async function handleAnswer(type, user, word, timestamp, number) {
     if(convoCount === answers.length - 1) {
         if(user.data()['live']['allCorrect'] && correctAnswer) {
             sendMessage(MSG.ALL_CORRECT, number);
+
+            await db.collection('users').doc(number).update({
+                ['live.score']: FieldValue.increment(1)
+            });
         }
         else if(!correctAnswer){
             sendMessage(MSG.LOST_INCORRECT, number);
@@ -134,6 +158,10 @@ async function handleAnswer(type, user, word, timestamp, number) {
         }
         else {
             sendMessage(MSG.LOST_CORRECT, number);
+
+            await db.collection('users').doc(number).update({
+                ['live.score']: FieldValue.increment(1)
+            });
         }
     }
     else {
@@ -144,6 +172,7 @@ async function handleAnswer(type, user, word, timestamp, number) {
             updatePayload = (wamid) => {
                 return {
                     ['live.convoCount']: convoCount+1,
+                    ['live.score']: FieldValue.increment(1),
                     [`live.history.${wamid}.msg`]: msg,
                     [`live.wamid`]: wamid,
                     ['live.acceptAnswer']: true

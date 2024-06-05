@@ -89,6 +89,7 @@ async function sendToBatch(event, batch, type=questionType) {
             type: type,
             wamid: wamid,
             convoCount: 0,
+            score: 0,
             answerTime: 0,
             endTime: event['end']['dateTime'],
             acceptAnswer: false,
