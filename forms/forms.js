@@ -23,7 +23,7 @@ const paidKeys = {
 const schedule = 'mnRZqSyfghcnkRBwZPs6FJ';
 
 // if a form is submitted with the correct endpoint
-app.post('/', async (req, res) => {
+app.post('/', (req, res) => {
   try {
     let password = false;
     req.body.submission.questions.forEach((input) => {
@@ -73,7 +73,7 @@ app.post('/', async (req, res) => {
   };
   dailyIntro['time'] = inputs[schedule];
   const time = (new Date(dailyIntro['time']).getTime() / 1000);
-  await createHttpTask(dailyIntro, time - 120);
+  createHttpTask(dailyIntro, time - 120);
 
   res.sendStatus(200);
 });
@@ -105,12 +105,11 @@ function buildText(input, type) {
   };
 }
 
-async function scheduleEvent(input, type) {
+function scheduleEvent(input, type) {
   if(input['date'] === "") return;
 
   const event = buildText(input, type);
-  try { await addToCalendar(event); }
-  catch (e) { console.log(e); }
+  if(process.env.ENV === 'prod') addToCalendar(event);
 
   // start the task 2 minutes before the message goes out
   const startTime = (new Date(input['date']).getTime() / 1000) - 120;
@@ -118,11 +117,11 @@ async function scheduleEvent(input, type) {
   event['input'] = input;
   event['type'] = type;
   event['phase'] = 'start';
-  await createHttpTask(event, startTime);
+  createHttpTask(event, startTime);
 
   const stopTime = (new Date(input['date']).getTime() / 1000) + 3600;
   event['phase'] = 'stop';
-  await createHttpTask(event, stopTime);
+  createHttpTask(event, stopTime);
 }
 
 
