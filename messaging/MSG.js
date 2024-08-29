@@ -18,7 +18,7 @@ const MSG = Object.freeze({
 	LOST_INCORRECT: "Wrong... 😞\n" + "You didn't win, but we're still proud of you 🤗",
 	LOST_CORRECT: "Correct!\n" + "You didn't win, but we're still proud of you 🤗",
 	CORRECT: "Correct! Next Question:\n\n%0%",
-	WRONG: "Wrong... 😞\n" + "u can keep playing just for fun 🙂\n\n%0%",
+	WRONG: "Wrong... 😞 " + "Next Question:\n\n%0%",
 	WON: "You actually won.",
 	FOOTER: "Question #: %0% out of %1%\n" + "Time left: %2% minutes",
 	HELP_OPTIONS: {

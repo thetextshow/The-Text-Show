@@ -6,6 +6,7 @@ const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { sendMessage, sendButtons, sendList } = require('../messaging/messaging.js');
 const { MSG, format } = require('../messaging/MSG.js');
+const { customers } = require('stripe')(process.env.STRIPE_KEY);
 
 initializeApp();
 
@@ -66,8 +67,13 @@ async function play(userExists=true, number) {
           await db.collection('oldUsers').doc(number).delete();
         }
         else {
+            const customer = await customers.create({
+                name: number
+            });
+
             await db.collection('users').doc(number).set({
                 balance: 0,
+                stripeID: customer.id,
                 number: number,
                 createdAt: FieldValue.serverTimestamp()
             });
